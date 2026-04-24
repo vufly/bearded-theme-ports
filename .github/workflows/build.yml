@@ -39,8 +39,8 @@ jobs:
       - name: Prepare upstream VS Code themes
         run: go run . prepare-upstream
 
-      - name: Build WezTerm themes
-        run: go run . build wezterm
+      - name: Build theme ports
+        run: go run . build
 
       - name: Upload generated artifact
         uses: actions/upload-artifact@v4
@@ -55,6 +55,8 @@ jobs:
           zip -r ../bearded-theme-ports.zip .
           cd wezterm
           zip -r ../../bearded-theme-ports-wezterm.zip .
+          cd ../tmtheme
+          zip -r ../../bearded-theme-ports-tmtheme.zip .
 
       - name: Generate release notes
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -81,7 +83,7 @@ jobs:
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release edit "$TAG" --notes-file RELEASE_NOTES.md
-            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip --clobber
+            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip --clobber
           else
-            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip --title "$TAG" --notes-file RELEASE_NOTES.md
+            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip --title "$TAG" --notes-file RELEASE_NOTES.md
           fi

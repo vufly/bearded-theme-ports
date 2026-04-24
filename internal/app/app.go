@@ -10,6 +10,7 @@ import (
 	"bearded-theme-ports/internal/model"
 	"bearded-theme-ports/internal/output"
 	"bearded-theme-ports/internal/source"
+	"bearded-theme-ports/internal/targets/tmtheme"
 	"bearded-theme-ports/internal/targets/wezterm"
 )
 
@@ -137,6 +138,7 @@ func allTargets() []string {
 }
 
 var builders = map[string]builderFunc{
+	"tmtheme": tmtheme.Build,
 	"wezterm": wezterm.Build,
 }
 

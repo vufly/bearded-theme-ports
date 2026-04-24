@@ -48,6 +48,10 @@ func WezTermOutputDir(root string) string {
 	return filepath.Join(root, "dist", "wezterm")
 }
 
+func TMThemeOutputDir(root string) string {
+	return filepath.Join(root, "dist", "tmtheme")
+}
+
 func LegacyTargetTypesDir(root string) string {
 	return filepath.Join(root, "dist", "terminals")
 }
