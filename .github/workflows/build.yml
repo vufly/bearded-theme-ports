@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Sync upstream repository
+        run: go run . sync
+
+      - name: Prepare upstream VS Code themes
+        run: go run . prepare-upstream
+
+      - name: Build WezTerm themes
+        run: go run . build wezterm
+
+      - name: Upload generated artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bearded-theme-ports
+          path: dist/
+
+      - name: Package release assets
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          cd dist
+          zip -r ../bearded-theme-ports.zip .
+          zip -r ../bearded-theme-ports-wezterm.zip wezterm
+
+      - name: Create GitHub release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v0.0.${{ github.run_number }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip --clobber
+          else
+            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip --title "$TAG" --generate-notes
+          fi
