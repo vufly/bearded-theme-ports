@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -51,7 +53,25 @@ jobs:
         run: |
           cd dist
           zip -r ../bearded-theme-ports.zip .
-          zip -r ../bearded-theme-ports-wezterm.zip wezterm
+          cd wezterm
+          zip -r ../../bearded-theme-ports-wezterm.zip .
+
+      - name: Generate release notes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          before="${{ github.event.before }}"
+          after="${{ github.sha }}"
+
+          if [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            range="$after"
+          else
+            range="$before..$after"
+          fi
+
+          {
+            printf '## Commits\n\n'
+            git log --format='- %h %s' "$range"
+          } > RELEASE_NOTES.md
 
       - name: Create GitHub release
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -60,7 +80,8 @@ jobs:
           TAG: v0.0.${{ github.run_number }}
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file RELEASE_NOTES.md
             gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip --clobber
           else
-            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip --title "$TAG" --generate-notes
+            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip --title "$TAG" --notes-file RELEASE_NOTES.md
           fi

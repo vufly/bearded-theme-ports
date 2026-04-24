@@ -79,8 +79,17 @@ func build(root string, args []string) error {
 		return err
 	}
 
-	fmt.Printf("Generated %d themes for targets: %s\n", len(themes), strings.Join(targets, ", "))
+	fmt.Printf("✅ Generated %d themes for targets: %s\n", len(themes), formatTargets(targets))
 	return nil
+}
+
+func formatTargets(targets []string) string {
+	formatted := make([]string, 0, len(targets))
+	for _, target := range targets {
+		formatted = append(formatted, fmt.Sprintf("\033[1;33m%s\033[0m", target))
+	}
+
+	return strings.Join(formatted, ", ")
 }
 
 func prepareAndBuild(root string, args []string) error {
@@ -169,7 +178,7 @@ func doctor(root string) error {
 		issues = append(issues, err.Error())
 	}
 
-	if err := source.CheckExecutable("npm"); err != nil {
+	if _, err := source.DetectPackageManager(root); err != nil {
 		issues = append(issues, err.Error())
 	}
 

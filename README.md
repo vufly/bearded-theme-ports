@@ -40,3 +40,11 @@ Generated output:
 
 - `dist/wezterm/`
 - `dist/metadata/`
+
+Upstream build package manager priority:
+
+- `pnpm`
+- `bun`
+- `npm`
+
+The tool uses the first one available on your machine.

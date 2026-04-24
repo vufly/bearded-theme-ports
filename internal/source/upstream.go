@@ -74,11 +74,16 @@ func PrepareUpstream(root string) error {
 		return fmt.Errorf("upstream repo missing at %s; run sync first", UpstreamDir(root))
 	}
 
-	if err := runCommand(UpstreamDir(root), "npm", "ci"); err != nil {
+	packageManager, err := DetectPackageManager(UpstreamDir(root))
+	if err != nil {
 		return err
 	}
 
-	return runCommand(UpstreamDir(root), "npm", "run", "build:vscode")
+	if err := runCommandArgs(UpstreamDir(root), packageManager.InstallCommand(UpstreamDir(root))); err != nil {
+		return err
+	}
+
+	return runCommandArgs(UpstreamDir(root), packageManager.RunBuildCommand())
 }
 
 func UpstreamCommitSHA(root string) (string, error) {
@@ -141,12 +146,68 @@ func CheckExecutable(name string) error {
 	return nil
 }
 
+type PackageManager string
+
+const (
+	PackageManagerPNPM PackageManager = "pnpm"
+	PackageManagerBun  PackageManager = "bun"
+	PackageManagerNPM  PackageManager = "npm"
+)
+
+func DetectPackageManager(projectDir string) (PackageManager, error) {
+	_ = projectDir
+	for _, candidate := range []PackageManager{PackageManagerPNPM, PackageManagerBun, PackageManagerNPM} {
+		if _, err := exec.LookPath(string(candidate)); err == nil {
+			return candidate, nil
+		}
+	}
+
+	return "", fmt.Errorf("missing package manager: need one of %q, %q, or %q", PackageManagerPNPM, PackageManagerBun, PackageManagerNPM)
+}
+
+func (packageManager PackageManager) InstallCommand(projectDir string) []string {
+	switch packageManager {
+	case PackageManagerPNPM:
+		if fileExists(filepath.Join(projectDir, "pnpm-lock.yaml")) {
+			return []string{string(packageManager), "install", "--frozen-lockfile"}
+		}
+		return []string{string(packageManager), "install", "--no-frozen-lockfile"}
+	case PackageManagerBun:
+		if fileExists(filepath.Join(projectDir, "bun.lock")) || fileExists(filepath.Join(projectDir, "bun.lockb")) {
+			return []string{string(packageManager), "install", "--frozen-lockfile"}
+		}
+		return []string{string(packageManager), "install"}
+	default:
+		if fileExists(filepath.Join(projectDir, "package-lock.json")) {
+			return []string{string(packageManager), "ci"}
+		}
+		return []string{string(packageManager), "install"}
+	}
+}
+
+func (packageManager PackageManager) RunBuildCommand() []string {
+	switch packageManager {
+	case PackageManagerBun:
+		return []string{string(packageManager), "run", "build:vscode"}
+	default:
+		return []string{string(packageManager), "run", "build:vscode"}
+	}
+}
+
 func runCommand(dir string, name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func runCommandArgs(dir string, args []string) error {
+	if len(args) == 0 {
+		return errors.New("missing command arguments")
+	}
+
+	return runCommand(dir, args[0], args[1:]...)
 }
 
 func fileExists(path string) bool {
