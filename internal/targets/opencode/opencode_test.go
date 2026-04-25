@@ -9,7 +9,7 @@ import (
 
 func TestRenderIncludesSchemaAndSyntaxKeys(t *testing.T) {
 	content, err := render(model.ThemeFile{
-		Slug: "bearded-theme-monokai-metallian",
+		Slug: "bearded-theme-monokai-stone",
 		Theme: model.VSCodeTheme{
 			Colors: map[string]string{
 				"editor.background":                 "#1e212b",

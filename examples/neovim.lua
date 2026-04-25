@@ -1,1 +1,1 @@
-vim.cmd.colorscheme("bearded-theme-monokai-metallian")
+vim.cmd.colorscheme("bearded-theme-monokai-stone")

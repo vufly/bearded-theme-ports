@@ -11,7 +11,7 @@ import (
 
 func TestRenderIncludesGlobalSettingsAndScopes(t *testing.T) {
 	content, err := RenderTheme(model.ThemeFile{
-		Slug: "bearded-theme-monokai-metallian",
+		Slug: "bearded-theme-monokai-stone",
 		Theme: model.VSCodeTheme{
 			Colors: map[string]string{
 				"editor.background":           "#1e212b",
@@ -39,7 +39,7 @@ func TestRenderIncludesGlobalSettingsAndScopes(t *testing.T) {
 	output := string(content)
 	checks := []string{
 		"<plist version=\"1.0\">",
-		"<string>Bearded Theme Monokai Metallian</string>",
+		"<string>Bearded Theme Monokai Stone</string>",
 		"<key>background</key>",
 		"<string>#1e212b</string>",
 		"<key>selection</key>",
@@ -90,7 +90,7 @@ func TestRenderInjectsSublimeVariableFunctionAlias(t *testing.T) {
 
 func TestRenderThemeWithOverridesAppendsMirroredTextMateRules(t *testing.T) {
 	content, err := RenderThemeWithOverrides(model.ThemeFile{
-		Slug: "bearded-theme-monokai-metallian",
+		Slug: "bearded-theme-monokai-stone",
 		Theme: model.VSCodeTheme{
 			Colors: map[string]string{
 				"editor.background": "#1e212b",

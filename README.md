@@ -611,7 +611,7 @@ To use one of the installed themes:
 
 ```bash
 bat --list-themes | grep bearded-theme
-bat --theme="bearded-theme-monokai-metallian" README.md
+bat --theme="bearded-theme-monokai-stone" README.md
 ```
 
 You can also start from the example config:

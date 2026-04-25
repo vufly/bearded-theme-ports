@@ -24,7 +24,7 @@ func TestBuildWritesTMThemeFiles(t *testing.T) {
 	}
 
 	paths, err := Build(root, []model.ThemeFile{{
-		Slug: "bearded-theme-monokai-metallian",
+		Slug: "bearded-theme-monokai-stone",
 		Theme: model.VSCodeTheme{
 			Colors: map[string]string{
 				"editor.background": "#1e212b",
