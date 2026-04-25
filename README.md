@@ -6,6 +6,162 @@ The goal is to keep a single source of truth for the theme and generate consiste
 
 ## Products
 
+### Helix
+
+Generates tree-sitter-based Helix theme files using the upstream Zed theme build as the syntax style source of truth.
+
+Output location after build:
+
+- `dist/helix/`
+
+Release assets:
+
+- `bearded-theme-ports.zip`
+- `bearded-theme-ports-helix.zip`
+
+Example files:
+
+- macOS/Linux installer: `scripts/install-helix.sh`
+- Windows PowerShell installer: `scripts/install-helix.ps1`
+- example config: `examples/helix-config.toml`
+
+Both scripts:
+
+- download the latest `bearded-theme-ports-helix.zip` release asset
+- install the `.toml` files into your Helix themes directory
+
+To install manually:
+
+- copy the `.toml` files into `~/.config/helix/themes/` on macOS/Linux
+- copy the `.toml` files into `%AppData%\helix\themes\` on Windows
+
+Then set the theme in your Helix config:
+
+- [`examples/helix-config.toml`](examples/helix-config.toml)
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-helix.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.sh | sh
+```
+
+#### Windows PowerShell
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-helix.ps1
+```
+
+Without checking out the repo:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-helix.ps1"
+Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1 -OutFile $tmp
+& $tmp
+Remove-Item $tmp
+```
+
+As a one-liner inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-helix.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+If you are launching it from `cmd.exe`, then use:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-helix.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+### Neovim
+
+Generates tree-sitter-based Neovim colorschemes using the upstream Zed theme build as the syntax style source of truth.
+
+Output location after build:
+
+- `dist/neovim/`
+
+Release assets:
+
+- `bearded-theme-ports.zip`
+- `bearded-theme-ports-neovim.zip`
+
+Example files:
+
+- macOS/Linux installer: `scripts/install-neovim.sh`
+- Windows PowerShell installer: `scripts/install-neovim.ps1`
+- example config: `examples/neovim.lua`
+
+Both scripts:
+
+- download the latest `bearded-theme-ports-neovim.zip` release asset
+- install the `.lua` colorscheme files into your Neovim colors directory
+
+To install manually:
+
+- copy the `.lua` files into `~/.config/nvim/colors/` on macOS/Linux
+- copy the `.lua` files into `%LocalAppData%\nvim\colors\` on Windows
+
+Then enable the colorscheme in your Neovim config:
+
+- [`examples/neovim.lua`](examples/neovim.lua)
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-neovim.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.sh | sh
+```
+
+#### Windows PowerShell
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-neovim.ps1
+```
+
+Without checking out the repo:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-neovim.ps1"
+Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1 -OutFile $tmp
+& $tmp
+Remove-Item $tmp
+```
+
+As a one-liner inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-neovim.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+If you are launching it from `cmd.exe`, then use:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-neovim.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
 ### WezTerm
 
 Generates a full set of Bearded Theme color scheme files for WezTerm.
@@ -185,20 +341,39 @@ go run . prepare-upstream
 go run . build
 ```
 
+`prepare-upstream` builds the upstream VS Code and Zed theme outputs used by this repository.
+
 One-command workflow:
 
 ```bash
 go run . prepare-and-build
+go run . prepare-and-build --install helix
+go run . prepare-and-build --install neovim
+```
+
+Install generated files locally after a build:
+
+```bash
+go run . build --install helix
+go run . build --install neovim
+go run . build --install wezterm
+go run . build --install helix neovim
 ```
 
 Build only selected products:
 
 ```bash
+go run . build helix
+go run . build neovim
 go run . build wezterm
 go run . build tmtheme
-go run . build wezterm tmtheme
+go run . build helix neovim wezterm tmtheme
+go run . build --install helix neovim
+go run . prepare-and-build helix
+go run . prepare-and-build neovim
 go run . prepare-and-build wezterm
 go run . prepare-and-build tmtheme
+go run . prepare-and-build --install helix neovim
 ```
 
 List supported products:
@@ -209,6 +384,8 @@ go run . list targets
 
 Generated output:
 
+- `dist/helix/`
+- `dist/neovim/`
 - `dist/wezterm/`
 - `dist/tmtheme/`
 - `dist/metadata/`

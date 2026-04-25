@@ -13,6 +13,7 @@ type Metadata struct {
 	GeneratedTargets []string
 	InputThemeCount  int
 	SourcePath       string
+	SourcePaths      []string
 	UpstreamCommit   string
 	UpstreamRepoURL  string
 }
@@ -22,14 +23,16 @@ type manifestFile struct {
 	GeneratedTargets []string `json:"generated_targets"`
 	InputThemeCount  int      `json:"input_theme_count"`
 	SourcePath       string   `json:"source_path"`
+	SourcePaths      []string `json:"source_paths,omitempty"`
 	UpstreamCommit   string   `json:"upstream_commit"`
 }
 
 type upstreamFile struct {
-	CommitSHA  string `json:"commit_sha"`
-	PreparedAt string `json:"prepared_at"`
-	RepoURL    string `json:"repo_url"`
-	SourcePath string `json:"source_path"`
+	CommitSHA   string   `json:"commit_sha"`
+	PreparedAt  string   `json:"prepared_at"`
+	RepoURL     string   `json:"repo_url"`
+	SourcePath  string   `json:"source_path"`
+	SourcePaths []string `json:"source_paths,omitempty"`
 }
 
 func WriteMetadata(root string, metadata Metadata) error {
@@ -44,16 +47,18 @@ func WriteMetadata(root string, metadata Metadata) error {
 		GeneratedTargets: metadata.GeneratedTargets,
 		InputThemeCount:  metadata.InputThemeCount,
 		SourcePath:       metadata.SourcePath,
+		SourcePaths:      metadata.SourcePaths,
 		UpstreamCommit:   metadata.UpstreamCommit,
 	}); err != nil {
 		return err
 	}
 
 	return writeJSON(filepath.Join(source.MetadataDir(root), "upstream.json"), upstreamFile{
-		CommitSHA:  metadata.UpstreamCommit,
-		PreparedAt: now,
-		RepoURL:    metadata.UpstreamRepoURL,
-		SourcePath: metadata.SourcePath,
+		CommitSHA:   metadata.UpstreamCommit,
+		PreparedAt:  now,
+		RepoURL:     metadata.UpstreamRepoURL,
+		SourcePath:  metadata.SourcePath,
+		SourcePaths: metadata.SourcePaths,
 	})
 }
 

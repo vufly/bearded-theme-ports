@@ -36,7 +36,7 @@ jobs:
       - name: Sync upstream repository
         run: go run . sync
 
-      - name: Prepare upstream VS Code themes
+      - name: Prepare upstream theme sources
         run: go run . prepare-upstream
 
       - name: Build theme ports
@@ -57,6 +57,10 @@ jobs:
           zip -r ../../bearded-theme-ports-wezterm.zip .
           cd ../tmtheme
           zip -r ../../bearded-theme-ports-tmtheme.zip .
+          cd ../helix
+          zip -r ../../bearded-theme-ports-helix.zip .
+          cd ../neovim
+          zip -r ../../bearded-theme-ports-neovim.zip .
 
       - name: Generate release notes
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -83,7 +87,7 @@ jobs:
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release edit "$TAG" --notes-file RELEASE_NOTES.md
-            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip --clobber
+            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip --clobber
           else
-            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip --title "$TAG" --notes-file RELEASE_NOTES.md
+            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip --title "$TAG" --notes-file RELEASE_NOTES.md
           fi

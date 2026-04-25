@@ -44,12 +44,24 @@ func InputThemesDir(root string) string {
 	return filepath.Join(UpstreamDir(root), "dist", "vscode", "themes")
 }
 
+func ZedThemesPath(root string) string {
+	return filepath.Join(UpstreamDir(root), "dist", "zed", "themes", "bearded-theme.json")
+}
+
 func WezTermOutputDir(root string) string {
 	return filepath.Join(root, "dist", "wezterm")
 }
 
 func TMThemeOutputDir(root string) string {
 	return filepath.Join(root, "dist", "tmtheme")
+}
+
+func HelixOutputDir(root string) string {
+	return filepath.Join(root, "dist", "helix")
+}
+
+func NeovimOutputDir(root string) string {
+	return filepath.Join(root, "dist", "neovim")
 }
 
 func LegacyTargetTypesDir(root string) string {
@@ -87,7 +99,7 @@ func PrepareUpstream(root string) error {
 		return err
 	}
 
-	return runCommandArgs(UpstreamDir(root), packageManager.RunBuildCommand())
+	return runCommandArgs(UpstreamDir(root), packageManager.RunBuildCommand("build"))
 }
 
 func UpstreamCommitSHA(root string) (string, error) {
@@ -142,6 +154,43 @@ func LoadThemes(root string) ([]model.ThemeFile, error) {
 	return themes, nil
 }
 
+func LoadZedThemes(root string) ([]model.ZedThemeFile, error) {
+	content, err := os.ReadFile(ZedThemesPath(root))
+	if err != nil {
+		return nil, fmt.Errorf("read zed themes: %w", err)
+	}
+
+	var family model.ZedThemeFamily
+	if err := json.Unmarshal(content, &family); err != nil {
+		return nil, fmt.Errorf("parse zed themes: %w", err)
+	}
+
+	vscodeThemes, err := LoadThemes(root)
+	if err != nil {
+		return nil, err
+	}
+
+	nameToSlug := make(map[string]string, len(vscodeThemes))
+	for _, theme := range vscodeThemes {
+		nameToSlug[normalizeThemeName(theme.Theme.Name)] = theme.Slug
+	}
+
+	zedThemes := make([]model.ZedThemeFile, 0, len(family.Themes))
+	for _, theme := range family.Themes {
+		slug, ok := nameToSlug[normalizeThemeName(theme.Name)]
+		if !ok {
+			return nil, fmt.Errorf("could not match zed theme %q to a built VS Code theme slug", theme.Name)
+		}
+
+		zedThemes = append(zedThemes, model.ZedThemeFile{
+			Slug:  slug,
+			Theme: theme,
+		})
+	}
+
+	return zedThemes, nil
+}
+
 func CheckExecutable(name string) error {
 	if _, err := exec.LookPath(name); err != nil {
 		return fmt.Errorf("missing executable %q", name)
@@ -189,13 +238,8 @@ func (packageManager PackageManager) InstallCommand(projectDir string) []string 
 	}
 }
 
-func (packageManager PackageManager) RunBuildCommand() []string {
-	switch packageManager {
-	case PackageManagerBun:
-		return []string{string(packageManager), "run", "build:vscode"}
-	default:
-		return []string{string(packageManager), "run", "build:vscode"}
-	}
+func (packageManager PackageManager) RunBuildCommand(script string) []string {
+	return []string{string(packageManager), "run", script}
 }
 
 func runCommand(dir string, name string, args ...string) error {
@@ -217,4 +261,28 @@ func runCommandArgs(dir string, args []string) error {
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
+}
+
+func normalizeThemeName(name string) string {
+	name = strings.ToLower(name)
+	name = strings.ReplaceAll(name, "beardedtheme", "bearded theme")
+	name = strings.ReplaceAll(name, "(experimental)", "")
+
+	var builder strings.Builder
+	for _, char := range name {
+		switch {
+		case char >= 'a' && char <= 'z':
+			builder.WriteRune(char)
+		case char >= '0' && char <= '9':
+			builder.WriteRune(char)
+		case char == '&':
+			builder.WriteRune(char)
+		default:
+			builder.WriteRune(' ')
+		}
+	}
+
+	name = strings.TrimSpace(builder.String())
+	name = strings.TrimPrefix(name, "bearded theme ")
+	return strings.Join(strings.Fields(name), " ")
 }
