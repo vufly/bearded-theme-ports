@@ -12,9 +12,10 @@ type VSCodeTheme struct {
 }
 
 type ThemeFile struct {
-	Path  string
-	Slug  string
-	Theme VSCodeTheme
+	Path    string
+	Slug    string
+	Theme   VSCodeTheme
+	IsLight bool
 }
 
 type TokenColorRule struct {

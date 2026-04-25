@@ -56,6 +56,37 @@ func TestRenderIncludesGlobalSettingsAndScopes(t *testing.T) {
 	}
 }
 
+func TestRenderEmitsSemanticClassForDarkAndLightThemes(t *testing.T) {
+	cases := []struct {
+		slug    string
+		isLight bool
+		want    string
+	}{
+		{slug: "bearded-theme-monokai-stone", isLight: false, want: "<string>theme.dark.bearded-theme-monokai-stone</string>"},
+		{slug: "bearded-theme-classics-light", isLight: true, want: "<string>theme.light.bearded-theme-classics-light</string>"},
+	}
+
+	for _, tc := range cases {
+		content, err := RenderTheme(model.ThemeFile{
+			Slug:    tc.slug,
+			IsLight: tc.isLight,
+			Theme: model.VSCodeTheme{
+				Colors: map[string]string{
+					"editor.background": "#1e212b",
+					"editor.foreground": "#d0d3de",
+				},
+			},
+		})
+		if err != nil {
+			t.Fatalf("RenderTheme(%s) error = %v", tc.slug, err)
+		}
+		output := string(content)
+		if !strings.Contains(output, "<key>semanticClass</key>") || !strings.Contains(output, tc.want) {
+			t.Fatalf("RenderTheme(%s) missing semanticClass %q\n%s", tc.slug, tc.want, output)
+		}
+	}
+}
+
 func TestRenderInjectsSublimeVariableFunctionAlias(t *testing.T) {
 	content, err := RenderTheme(model.ThemeFile{
 		Slug: "bearded-theme-monokai-stone",

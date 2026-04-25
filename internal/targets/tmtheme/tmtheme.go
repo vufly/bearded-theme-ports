@@ -16,9 +16,10 @@ import (
 )
 
 type themeFile struct {
-	name   string
-	global themeSettings
-	rules  []scopeRule
+	name          string
+	semanticClass string
+	global        themeSettings
+	rules         []scopeRule
 }
 
 type scopeRule struct {
@@ -114,6 +115,9 @@ func render(input model.ThemeFile, overrides []model.TokenColorRule) ([]byte, er
 	buffer.WriteString("<plist version=\"1.0\">\n")
 	buffer.WriteString("<dict>\n")
 	writeKeyString(&buffer, 1, "name", theme.name)
+	if theme.semanticClass != "" {
+		writeKeyString(&buffer, 1, "semanticClass", theme.semanticClass)
+	}
 	writeLine(&buffer, 1, "<key>settings</key>")
 	writeLine(&buffer, 1, "<array>")
 	writeGlobalSettings(&buffer, theme.global)
@@ -180,10 +184,27 @@ func convertTheme(input model.ThemeFile, overrides []model.TokenColorRule) theme
 	}
 
 	return themeFile{
-		name:   formatThemeName(input.Slug),
-		global: global,
-		rules:  rules,
+		name:          formatThemeName(input.Slug),
+		semanticClass: formatSemanticClass(input.Slug, input.IsLight),
+		global:        global,
+		rules:         rules,
 	}
+}
+
+// formatSemanticClass returns the Sublime Text-style semanticClass for a
+// theme. The `theme.dark.<slug>` / `theme.light.<slug>` convention is used by
+// editors such as Sublime Text and is mirrored by other tmTheme bundles
+// (e.g. Catppuccin) so downstream tooling can pick a matching variant for the
+// terminal background.
+func formatSemanticClass(slug string, isLight bool) string {
+	if slug == "" {
+		return ""
+	}
+	variant := "dark"
+	if isLight {
+		variant = "light"
+	}
+	return "theme." + variant + "." + slug
 }
 
 // sublimeScopeAliases injects extra scopes alongside an existing upstream
