@@ -4,11 +4,58 @@ Tools for porting [Bearded Theme](https://github.com/BeardedBear/bearded-theme/)
 
 The goal is to keep a single source of truth for the theme and generate consistent ports for different targets.
 
+Generated files in this repository are built from upstream artifacts, not hand-maintained theme definitions.
+
+## Quick Start
+
+Build everything:
+
+```bash
+go run . prepare-and-build
+```
+
+Build one target:
+
+```bash
+go run . prepare-and-build helix
+```
+
+Build and install locally:
+
+```bash
+go run . build --install wezterm
+```
+
+List supported targets:
+
+```bash
+go run . list targets
+```
+
+## Target Overview
+
+| Target | Category | Source of truth | Output | Release asset | Install scripts |
+| --- | --- | --- | --- | --- | --- |
+| Helix | Editor | Zed | `dist/helix/` | `bearded-theme-ports-helix.zip` | Yes |
+| Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
+| WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
+| tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
+| bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
+
 ## Products
 
-### Helix
+Each product section below is collapsible to keep the README easier to scan.
+
+### Editors
+
+<details>
+<summary><strong>Helix</strong> — tree-sitter-based Helix themes</summary>
 
 Generates tree-sitter-based Helix theme files using the upstream Zed theme build as the syntax style source of truth.
+
+Source of truth:
+
+- upstream Zed theme build
 
 Output location after build:
 
@@ -84,9 +131,16 @@ If you are launching it from `cmd.exe`, then use:
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-helix.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
-### Neovim
+</details>
+
+<details>
+<summary><strong>Neovim</strong> — tree-sitter-based Neovim colorschemes</summary>
 
 Generates tree-sitter-based Neovim colorschemes using the upstream Zed theme build as the syntax style source of truth.
+
+Source of truth:
+
+- upstream Zed theme build
 
 Output location after build:
 
@@ -162,9 +216,18 @@ If you are launching it from `cmd.exe`, then use:
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-neovim.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
-### WezTerm
+</details>
+
+### Terminal and theme formats
+
+<details>
+<summary><strong>WezTerm</strong> — WezTerm color schemes and install scripts</summary>
 
 Generates a full set of Bearded Theme color scheme files for WezTerm.
+
+Source of truth:
+
+- upstream VS Code theme build
 
 Output location after build:
 
@@ -175,9 +238,86 @@ Release assets:
 - `bearded-theme-ports.zip`
 - `bearded-theme-ports-wezterm.zip`
 
-### tmTheme
+To install manually:
+
+- copy the generated files into `~/.config/wezterm/themes/bearded-theme/` on macOS/Linux
+- copy the generated files into `%USERPROFILE%\.config\wezterm\themes\bearded-theme\` on Windows
+
+Example files:
+
+- macOS/Linux installer: `scripts/install-wezterm.sh`
+- Windows PowerShell installer: `scripts/install-wezterm.ps1`
+- example WezTerm config: `examples/wezterm.lua`
+
+Both scripts:
+
+- download the latest `bearded-theme-ports.zip` release asset
+- create `~/.config/wezterm/themes/bearded-theme/` if needed
+- copy the WezTerm theme files into that folder
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-wezterm.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.sh | sh
+```
+
+#### Windows PowerShell
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-wezterm.ps1
+```
+
+Without checking out the repo:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"
+Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1 -OutFile $tmp
+& $tmp
+Remove-Item $tmp
+```
+
+As a one-liner inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+If you are launching it from `cmd.exe`, then use:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-wezterm.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+After installation, point WezTerm at the theme directory in your config.
+
+Start from the example config:
+
+- [`examples/wezterm.lua`](examples/wezterm.lua)
+
+On Windows, adjust the path to your home directory if needed.
+
+</details>
+
+<details>
+<summary><strong>tmTheme</strong> — legacy TextMate-compatible theme files</summary>
 
 Generates legacy TextMate-compatible `.tmTheme` plist files for editors and tools that still consume the TextMate theme format.
+
+Source of truth:
+
+- upstream VS Code theme build
 
 Output location after build:
 
@@ -188,9 +328,17 @@ Release assets:
 - `bearded-theme-ports.zip`
 - `bearded-theme-ports-tmtheme.zip`
 
-### bat
+</details>
+
+<details>
+<summary><strong>bat</strong> — install the generated tmTheme output for bat</summary>
 
 `bat` supports custom themes in legacy `.tmTheme` format, so the generated `tmtheme` output can be installed directly into `bat`.
+
+Relationship to generated outputs:
+
+- `bat` does not have its own generated theme format in this repo
+- it installs the `tmtheme` output from `dist/tmtheme/`
 
 Reference:
 
@@ -264,76 +412,28 @@ You can also start from the example config:
 
 - [`examples/bat.conf`](examples/bat.conf)
 
-## Install Scripts
-
-Example install scripts are included in this repository:
-
-- macOS/Linux: `scripts/install-wezterm.sh`
-- Windows PowerShell: `scripts/install-wezterm.ps1`
-- example WezTerm config: `examples/wezterm.lua`
-
-Both scripts:
-
-- download the latest `bearded-theme-ports.zip` release asset
-- create `~/.config/wezterm/themes/bearded-theme/` if needed
-- copy the WezTerm theme files into that folder
-
-### macOS/Linux
-
-```bash
-sh scripts/install-wezterm.sh
-```
-
-Without checking out the repo:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.sh | sh
-```
-
-Or with `wget`:
-
-```bash
-wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.sh | sh
-```
-
-### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-wezterm.ps1
-```
-
-Without checking out the repo:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"
-Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1 -OutFile $tmp
-& $tmp
-Remove-Item $tmp
-```
-
-As a one-liner inside PowerShell or `pwsh`:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
-```
-
-If you are launching it from `cmd.exe`, then use:
-
-```cmd
-powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-wezterm.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
-```
-
-After installation, point WezTerm at the theme directory in your config.
-
-Start from the example config:
-
-- [`examples/wezterm.lua`](examples/wezterm.lua)
-
-On Windows, adjust the path to your home directory if needed.
+</details>
 
 ## Development
 
-Current CLI workflow:
+Prerequisites:
+
+- Go
+- one of `pnpm`, `bun`, or `npm` for preparing upstream artifacts
+
+Common commands:
+
+```bash
+go run . prepare-and-build          # build everything
+go run . prepare-and-build helix    # build one target
+go run . build wezterm              # build from already-prepared upstream artifacts
+go run . build --install neovim     # build and install locally
+go run . list targets               # list supported targets
+```
+
+`prepare-upstream` builds the upstream VS Code and Zed theme outputs used by this repository.
+
+Full local workflow:
 
 ```bash
 go run . sync
@@ -341,28 +441,15 @@ go run . prepare-upstream
 go run . build
 ```
 
-`prepare-upstream` builds the upstream VS Code and Zed theme outputs used by this repository.
-
-One-command workflow:
+More examples:
 
 ```bash
-go run . prepare-and-build
 go run . prepare-and-build --install helix
 go run . prepare-and-build --install neovim
-```
-
-Install generated files locally after a build:
-
-```bash
 go run . build --install helix
 go run . build --install neovim
 go run . build --install wezterm
 go run . build --install helix neovim
-```
-
-Build only selected products:
-
-```bash
 go run . build helix
 go run . build neovim
 go run . build wezterm
