@@ -38,10 +38,10 @@ go run . list targets
 
 | Target | Category | Source of truth | Output | Release asset | Install scripts |
 | --- | --- | --- | --- | --- | --- |
-| Codex | CLI theme | VS Code via `tmTheme` | `dist/codex/` | `bearded-theme-ports-codex.zip` | No |
+| Codex | CLI theme | VS Code via `tmTheme` | `dist/codex/` | `bearded-theme-ports-codex.zip` | Yes |
 | Helix | Editor | Zed | `dist/helix/` | `bearded-theme-ports-helix.zip` | Yes |
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
-| OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | No |
+| OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
@@ -246,6 +246,18 @@ Release assets:
 
 - `bearded-theme-ports-codex.zip`
 
+Example files:
+
+- macOS/Linux installer: `scripts/install-codex.sh`
+- Windows PowerShell installer: `scripts/install-codex.ps1`
+- example config: `examples/codex-config.toml`
+
+Both scripts:
+
+- download the latest `bearded-theme-ports-codex.zip` release asset
+- install the `.tmTheme` files into `$CODEX_HOME/themes/`
+- if `CODEX_HOME` is unset, they use `~/.codex/themes/`
+
 To install manually:
 
 - copy the `.tmTheme` files into `$CODEX_HOME/themes/`
@@ -255,6 +267,51 @@ Local install from this repo:
 
 ```bash
 go run . build --install codex
+```
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-codex.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
+```
+
+#### Windows PowerShell
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-codex.ps1
+```
+
+Without checking out the repo:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"
+Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1 -OutFile $tmp
+& $tmp
+Remove-Item $tmp
+```
+
+As a one-liner inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+If you are launching it from `cmd.exe`, then use:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-codex.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
 Example config:
@@ -374,6 +431,17 @@ Release assets:
 
 - `bearded-theme-ports-opencode.zip`
 
+Example files:
+
+- macOS/Linux installer: `scripts/install-opencode.sh`
+- Windows PowerShell installer: `scripts/install-opencode.ps1`
+- example config: `examples/opencode-tui.json`
+
+Both scripts:
+
+- download the latest `bearded-theme-ports-opencode.zip` release asset
+- install the `.json` files into your OpenCode themes directory
+
 To install manually:
 
 - copy the `.json` files into `~/.config/opencode/themes/` on macOS/Linux
@@ -383,6 +451,51 @@ Local install from this repo:
 
 ```bash
 go run . build --install opencode
+```
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-opencode.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
+```
+
+#### Windows PowerShell
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-opencode.ps1
+```
+
+Without checking out the repo:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"
+Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1 -OutFile $tmp
+& $tmp
+Remove-Item $tmp
+```
+
+As a one-liner inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+If you are launching it from `cmd.exe`, then use:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-opencode.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
 Example config:
