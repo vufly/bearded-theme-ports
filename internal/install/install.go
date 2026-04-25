@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"bearded-theme-ports/internal/source"
 )
 
 func SupportedTarget(target string) bool {
 	switch target {
-	case "helix", "neovim", "wezterm":
+	case "bat", "codex", "helix", "neovim", "opencode", "wezterm":
 		return true
 	default:
 		return false
@@ -22,14 +24,31 @@ func SupportedTarget(target string) bool {
 func Install(root string, target string) (string, error) {
 	var sourceDir string
 	var targetDir string
+	var postInstall func() error
 
 	switch target {
+	case "bat":
+		batBin, batTargetDir, err := batThemesDir()
+		if err != nil {
+			return "", err
+		}
+		sourceDir = source.TMThemeOutputDir(root)
+		targetDir = batTargetDir
+		postInstall = func() error {
+			return runBatCacheBuild(batBin)
+		}
+	case "codex":
+		sourceDir = source.CodexOutputDir(root)
+		targetDir = codexThemesDir()
 	case "helix":
 		sourceDir = source.HelixOutputDir(root)
 		targetDir = helixThemesDir()
 	case "neovim":
 		sourceDir = source.NeovimOutputDir(root)
 		targetDir = neovimColorsDir()
+	case "opencode":
+		sourceDir = source.OpenCodeOutputDir(root)
+		targetDir = opencodeThemesDir()
 	case "wezterm":
 		sourceDir = source.WezTermOutputDir(root)
 		targetDir = weztermThemesDir()
@@ -43,6 +62,11 @@ func Install(root string, target string) (string, error) {
 
 	if err := copyDirContents(sourceDir, targetDir); err != nil {
 		return "", err
+	}
+	if postInstall != nil {
+		if err := postInstall(); err != nil {
+			return "", err
+		}
 	}
 
 	return targetDir, nil
@@ -131,4 +155,66 @@ func neovimColorsDir() string {
 
 func weztermThemesDir() string {
 	return filepath.Join(configRootDir(), "wezterm", "themes", "bearded-theme")
+}
+
+func codexThemesDir() string {
+	if codexHome := os.Getenv("CODEX_HOME"); codexHome != "" {
+		return filepath.Join(codexHome, "themes")
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return filepath.Join(".codex", "themes")
+	}
+
+	return filepath.Join(homeDir, ".codex", "themes")
+}
+
+func opencodeThemesDir() string {
+	if runtime.GOOS == "windows" {
+		if appData := os.Getenv("APPDATA"); appData != "" {
+			return filepath.Join(appData, "opencode", "themes")
+		}
+	}
+
+	return filepath.Join(configRootDir(), "opencode", "themes")
+}
+
+func batThemesDir() (string, string, error) {
+	batBin, err := resolveBatCommand()
+	if err != nil {
+		return "", "", err
+	}
+	if configDir := strings.TrimSpace(os.Getenv("BAT_CONFIG_DIR")); configDir != "" {
+		return batBin, filepath.Join(configDir, "themes"), nil
+	}
+
+	output, err := exec.Command(batBin, "--config-dir").Output()
+	if err != nil {
+		return "", "", fmt.Errorf("resolve bat config dir: %w", err)
+	}
+
+	configDir := strings.TrimSpace(string(output))
+	if configDir == "" {
+		return "", "", fmt.Errorf("%s --config-dir returned an empty path", batBin)
+	}
+
+	return batBin, filepath.Join(configDir, "themes"), nil
+}
+
+func resolveBatCommand() (string, error) {
+	for _, name := range []string{"bat", "batcat"} {
+		if path, err := exec.LookPath(name); err == nil {
+			return path, nil
+		}
+	}
+
+	return "", fmt.Errorf("missing bat executable: need bat or batcat")
+}
+
+func runBatCacheBuild(batBin string) error {
+	cmd := exec.Command(batBin, "cache", "--build")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

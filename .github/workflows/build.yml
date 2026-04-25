@@ -55,6 +55,10 @@ jobs:
           zip -r ../bearded-theme-ports.zip .
           cd wezterm
           zip -r ../../bearded-theme-ports-wezterm.zip .
+          cd ../codex
+          zip -r ../../bearded-theme-ports-codex.zip .
+          cd ../opencode
+          zip -r ../../bearded-theme-ports-opencode.zip .
           cd ../tmtheme
           zip -r ../../bearded-theme-ports-tmtheme.zip .
           cd ../helix
@@ -87,7 +91,7 @@ jobs:
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release edit "$TAG" --notes-file RELEASE_NOTES.md
-            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip --clobber
+            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-codex.zip bearded-theme-ports-opencode.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip --clobber
           else
-            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip --title "$TAG" --notes-file RELEASE_NOTES.md
+            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-codex.zip bearded-theme-ports-opencode.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip --title "$TAG" --notes-file RELEASE_NOTES.md
           fi

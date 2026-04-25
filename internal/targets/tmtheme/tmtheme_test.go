@@ -1,6 +1,8 @@
 package tmtheme
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -8,7 +10,7 @@ import (
 )
 
 func TestRenderIncludesGlobalSettingsAndScopes(t *testing.T) {
-	content, err := render(model.ThemeFile{
+	content, err := RenderTheme(model.ThemeFile{
 		Slug: "bearded-theme-monokai-metallian",
 		Theme: model.VSCodeTheme{
 			Colors: map[string]string{
@@ -51,5 +53,72 @@ func TestRenderIncludesGlobalSettingsAndScopes(t *testing.T) {
 		if !strings.Contains(output, check) {
 			t.Fatalf("expected output to contain %q\n%s", check, output)
 		}
+	}
+}
+
+func TestRenderThemeWithOverridesAppendsMirroredTextMateRules(t *testing.T) {
+	content, err := RenderThemeWithOverrides(model.ThemeFile{
+		Slug: "bearded-theme-monokai-metallian",
+		Theme: model.VSCodeTheme{
+			Colors: map[string]string{
+				"editor.background": "#1e212b",
+				"editor.foreground": "#d0d3de",
+			},
+		},
+	}, []model.TokenColorRule{
+		{
+			Scope: model.ScopeList{"keyword"},
+			Settings: model.TokenColorSettings{
+				FontStyle: "bold",
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("RenderThemeWithOverrides() error = %v", err)
+	}
+
+	output := string(content)
+	if !strings.Contains(output, "<string>keyword</string>") || !strings.Contains(output, "<string>bold</string>") {
+		t.Fatalf("expected override scope and fontStyle in output\n%s", output)
+	}
+}
+
+func TestLoadMirroredOverrides(t *testing.T) {
+	root := t.TempDir()
+	configDir := filepath.Join(root, "config")
+	if err := os.MkdirAll(configDir, 0o755); err != nil {
+		t.Fatalf("MkdirAll() error = %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(configDir, "vscode_highlight.json5"), []byte(`{
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "keyword",
+        "settings": {
+          "fontStyle": "bold"
+        }
+      },
+      {
+        "scope": "keyword.operator", // inline comment
+        "settings": {
+          "fontStyle": ""
+        }
+      }
+    ]
+  }
+}`), 0o644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+
+	overrides, err := LoadMirroredOverrides(root)
+	if err != nil {
+		t.Fatalf("LoadMirroredOverrides() error = %v", err)
+	}
+
+	if len(overrides) != 2 {
+		t.Fatalf("LoadMirroredOverrides() loaded %d rules, want 2", len(overrides))
+	}
+	if overrides[0].Scope[0] != "keyword" || overrides[0].Settings.FontStyle != "bold" {
+		t.Fatalf("unexpected first override: %#v", overrides[0])
 	}
 }

@@ -11,8 +11,10 @@ import (
 	"bearded-theme-ports/internal/model"
 	"bearded-theme-ports/internal/output"
 	"bearded-theme-ports/internal/source"
+	"bearded-theme-ports/internal/targets/codex"
 	"bearded-theme-ports/internal/targets/helix"
 	"bearded-theme-ports/internal/targets/neovim"
+	"bearded-theme-ports/internal/targets/opencode"
 	"bearded-theme-ports/internal/targets/tmtheme"
 	"bearded-theme-ports/internal/targets/wezterm"
 )
@@ -30,8 +32,9 @@ type targetDefinition struct {
 }
 
 type buildOptions struct {
-	install bool
-	targets []string
+	install        bool
+	targets        []string
+	installTargets []string
 }
 
 func Run(args []string) error {
@@ -84,12 +87,9 @@ func build(root string, args []string) error {
 	}
 
 	installedTargets := make([]string, 0, len(options.targets))
-	installedPaths := make([]string, 0, len(options.targets))
+	installedPaths := make([]string, 0, len(options.installTargets))
 	if options.install {
-		for _, target := range options.targets {
-			if !install.SupportedTarget(target) {
-				continue
-			}
+		for _, target := range options.installTargets {
 			installPath, err := install.Install(root, target)
 			if err != nil {
 				return err
@@ -159,11 +159,12 @@ func parseBuildOptions(args []string) (buildOptions, error) {
 		}
 	}
 
-	targets, err := parseTargets(targetArgs)
+	targets, installTargets, err := parseTargets(targetArgs, options.install)
 	if err != nil {
 		return buildOptions{}, err
 	}
 	options.targets = targets
+	options.installTargets = installTargets
 	return options, nil
 }
 
@@ -225,16 +226,42 @@ func primarySourcePath(paths []string) string {
 	return paths[0]
 }
 
-func parseTargets(args []string) ([]string, error) {
+func parseTargets(args []string, installRequested bool) ([]string, []string, error) {
 	if len(args) == 0 {
-		return allTargets(), nil
+		targets := allTargets()
+		installTargets := make([]string, 0, len(targets))
+		if installRequested {
+			for _, target := range targets {
+				if install.SupportedTarget(target) {
+					installTargets = append(installTargets, target)
+				}
+			}
+		}
+		return targets, installTargets, nil
 	}
 
 	seen := make(map[string]bool, len(args))
+	seenInstall := make(map[string]bool, len(args))
 	targets := make([]string, 0, len(args))
+	installTargets := make([]string, 0, len(args))
 	for _, target := range args {
+		if installRequested && target == "bat" {
+			if !seen["tmtheme"] {
+				seen["tmtheme"] = true
+				targets = append(targets, "tmtheme")
+			}
+			if !seenInstall["bat"] {
+				seenInstall["bat"] = true
+				installTargets = append(installTargets, "bat")
+			}
+			continue
+		}
+
 		if _, ok := targetsByName[target]; !ok {
-			return nil, fmt.Errorf("unsupported build target %q", target)
+			if target == "bat" {
+				return nil, nil, fmt.Errorf("unsupported build target %q (use --install bat to install the tmtheme output into bat)", target)
+			}
+			return nil, nil, fmt.Errorf("unsupported build target %q", target)
 		}
 
 		if seen[target] {
@@ -243,9 +270,13 @@ func parseTargets(args []string) ([]string, error) {
 
 		seen[target] = true
 		targets = append(targets, target)
+		if installRequested && install.SupportedTarget(target) && !seenInstall[target] {
+			seenInstall[target] = true
+			installTargets = append(installTargets, target)
+		}
 	}
 
-	return targets, nil
+	return targets, installTargets, nil
 }
 
 func allTargets() []string {
@@ -258,6 +289,12 @@ func allTargets() []string {
 }
 
 var targetsByName = map[string]targetDefinition{
+	"codex": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return codex.Build(root, inputs.VSCodeThemes)
+		},
+	},
 	"helix": {
 		source:  "zed",
 		builder: func(root string, inputs buildInputs) ([]string, error) { return helix.Build(root, inputs.ZedThemes) },
@@ -265,6 +302,12 @@ var targetsByName = map[string]targetDefinition{
 	"neovim": {
 		source:  "zed",
 		builder: func(root string, inputs buildInputs) ([]string, error) { return neovim.Build(root, inputs.ZedThemes) },
+	},
+	"opencode": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return opencode.Build(root, inputs.VSCodeThemes)
+		},
 	},
 	"tmtheme": {
 		source: "vscode",

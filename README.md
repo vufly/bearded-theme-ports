@@ -6,6 +6,8 @@ The goal is to keep a single source of truth for the theme and generate consiste
 
 Generated files in this repository are built from upstream artifacts, not hand-maintained theme definitions.
 
+The repository also mirrors local VS Code TextMate override rules in `config/vscode_highlight.json5`, and those overrides are applied to tmTheme-derived targets.
+
 ## Quick Start
 
 Build everything:
@@ -36,8 +38,10 @@ go run . list targets
 
 | Target | Category | Source of truth | Output | Release asset | Install scripts |
 | --- | --- | --- | --- | --- | --- |
+| Codex | CLI theme | VS Code via `tmTheme` | `dist/codex/` | `bearded-theme-ports-codex.zip` | No |
 | Helix | Editor | Zed | `dist/helix/` | `bearded-theme-ports-helix.zip` | Yes |
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
+| OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | No |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
@@ -221,6 +225,45 @@ powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]:
 ### Terminal and theme formats
 
 <details>
+<summary><strong>Codex</strong> — TextMate themes for Codex CLI</summary>
+
+Generates `.tmTheme` files for Codex CLI.
+
+Source of truth:
+
+- upstream VS Code theme build
+- rendered through the same TextMate-compatible format used by the `tmtheme` target
+
+Reference:
+
+- <https://developers.openai.com/codex/cli/features#syntax-highlighting-and-themes>
+
+Output location after build:
+
+- `dist/codex/`
+
+Release assets:
+
+- `bearded-theme-ports-codex.zip`
+
+To install manually:
+
+- copy the `.tmTheme` files into `$CODEX_HOME/themes/`
+- if `CODEX_HOME` is unset, use `~/.codex/themes/`
+
+Local install from this repo:
+
+```bash
+go run . build --install codex
+```
+
+Example config:
+
+- [`examples/codex-config.toml`](examples/codex-config.toml)
+
+</details>
+
+<details>
 <summary><strong>WezTerm</strong> — WezTerm color schemes and install scripts</summary>
 
 Generates a full set of Bearded Theme color scheme files for WezTerm.
@@ -311,6 +354,44 @@ On Windows, adjust the path to your home directory if needed.
 </details>
 
 <details>
+<summary><strong>OpenCode</strong> — JSON themes for OpenCode</summary>
+
+Generates JSON theme files for OpenCode.
+
+Source of truth:
+
+- upstream VS Code theme build
+
+Reference:
+
+- <https://opencode.ai/docs/themes/>
+
+Output location after build:
+
+- `dist/opencode/`
+
+Release assets:
+
+- `bearded-theme-ports-opencode.zip`
+
+To install manually:
+
+- copy the `.json` files into `~/.config/opencode/themes/` on macOS/Linux
+- copy the `.json` files into `%AppData%\\opencode\\themes\\` on Windows
+
+Local install from this repo:
+
+```bash
+go run . build --install opencode
+```
+
+Example config:
+
+- [`examples/opencode-tui.json`](examples/opencode-tui.json)
+
+</details>
+
+<details>
 <summary><strong>tmTheme</strong> — legacy TextMate-compatible theme files</summary>
 
 Generates legacy TextMate-compatible `.tmTheme` plist files for editors and tools that still consume the TextMate theme format.
@@ -355,6 +436,18 @@ Both scripts:
 - download the latest `bearded-theme-ports-tmtheme.zip` release asset
 - install the `.tmTheme` files into `$(bat --config-dir)/themes`
 - run `bat cache --build`
+
+Local install from this repo:
+
+```bash
+go run . build --install bat
+```
+
+This local install path:
+
+- builds the `tmtheme` output
+- copies the generated `.tmTheme` files into `$(bat --config-dir)/themes`
+- runs `bat cache --build`
 
 #### macOS/Linux
 
@@ -425,8 +518,12 @@ Common commands:
 
 ```bash
 go run . prepare-and-build          # build everything
+go run . prepare-and-build codex    # build one target
+go run . build --install bat        # build tmtheme and install it for bat
 go run . prepare-and-build helix    # build one target
+go run . build opencode             # build from already-prepared upstream artifacts
 go run . build wezterm              # build from already-prepared upstream artifacts
+go run . build --install codex      # build and install locally
 go run . build --install neovim     # build and install locally
 go run . list targets               # list supported targets
 ```
@@ -446,21 +543,28 @@ More examples:
 ```bash
 go run . prepare-and-build --install helix
 go run . prepare-and-build --install neovim
+go run . build --install bat
+go run . build --install codex
 go run . build --install helix
 go run . build --install neovim
+go run . build --install opencode
 go run . build --install wezterm
-go run . build --install helix neovim
+go run . build --install codex helix neovim opencode
+go run . build codex
 go run . build helix
 go run . build neovim
+go run . build opencode
 go run . build wezterm
 go run . build tmtheme
-go run . build helix neovim wezterm tmtheme
-go run . build --install helix neovim
+go run . build codex helix neovim opencode wezterm tmtheme
+go run . build --install codex helix neovim
+go run . prepare-and-build codex
 go run . prepare-and-build helix
 go run . prepare-and-build neovim
+go run . prepare-and-build opencode
 go run . prepare-and-build wezterm
 go run . prepare-and-build tmtheme
-go run . prepare-and-build --install helix neovim
+go run . prepare-and-build --install codex helix neovim
 ```
 
 List supported products:
@@ -471,8 +575,10 @@ go run . list targets
 
 Generated output:
 
+- `dist/codex/`
 - `dist/helix/`
 - `dist/neovim/`
+- `dist/opencode/`
 - `dist/wezterm/`
 - `dist/tmtheme/`
 - `dist/metadata/`

@@ -64,6 +64,14 @@ func NeovimOutputDir(root string) string {
 	return filepath.Join(root, "dist", "neovim")
 }
 
+func CodexOutputDir(root string) string {
+	return filepath.Join(root, "dist", "codex")
+}
+
+func OpenCodeOutputDir(root string) string {
+	return filepath.Join(root, "dist", "opencode")
+}
+
 func LegacyTargetTypesDir(root string) string {
 	return filepath.Join(root, "dist", "terminals")
 }

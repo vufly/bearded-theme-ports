@@ -2,6 +2,7 @@ package tmtheme
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"math"
@@ -38,6 +39,10 @@ type themeSettings struct {
 
 func Build(root string, themes []model.ThemeFile) ([]string, error) {
 	outputDir := source.TMThemeOutputDir(root)
+	overrides, err := LoadMirroredOverrides(root)
+	if err != nil {
+		return nil, err
+	}
 	if err := os.RemoveAll(outputDir); err != nil {
 		return nil, err
 	}
@@ -49,7 +54,7 @@ func Build(root string, themes []model.ThemeFile) ([]string, error) {
 	paths := make([]string, 0, len(themes))
 	for _, theme := range themes {
 		outputPath := filepath.Join(outputDir, theme.Slug+".tmTheme")
-		content, err := render(theme)
+		content, err := RenderThemeWithOverrides(theme, overrides)
 		if err != nil {
 			return nil, fmt.Errorf("render %s: %w", theme.Slug, err)
 		}
@@ -64,8 +69,44 @@ func Build(root string, themes []model.ThemeFile) ([]string, error) {
 	return paths, nil
 }
 
-func render(input model.ThemeFile) ([]byte, error) {
-	theme := convertTheme(input)
+func RenderTheme(input model.ThemeFile) ([]byte, error) {
+	return RenderThemeWithOverrides(input, nil)
+}
+
+func RenderThemeWithOverrides(input model.ThemeFile, overrides []model.TokenColorRule) ([]byte, error) {
+	return render(input, overrides)
+}
+
+func LoadMirroredOverrides(root string) ([]model.TokenColorRule, error) {
+	type overrideFile struct {
+		EditorTokenColorCustomizations struct {
+			TextMateRules []model.TokenColorRule `json:"textMateRules"`
+		} `json:"editor.tokenColorCustomizations"`
+	}
+
+	content, err := os.ReadFile(filepath.Join(root, "config", "vscode_highlight.json5"))
+	if err != nil {
+		return nil, err
+	}
+
+	clean := make([]string, 0, 64)
+	for _, line := range strings.Split(string(content), "\n") {
+		if index := strings.Index(line, "//"); index >= 0 {
+			line = line[:index]
+		}
+		clean = append(clean, line)
+	}
+
+	var file overrideFile
+	if err := json.Unmarshal([]byte(strings.Join(clean, "\n")), &file); err != nil {
+		return nil, fmt.Errorf("parse config/vscode_highlight.json5: %w", err)
+	}
+
+	return file.EditorTokenColorCustomizations.TextMateRules, nil
+}
+
+func render(input model.ThemeFile, overrides []model.TokenColorRule) ([]byte, error) {
+	theme := convertTheme(input, overrides)
 	var buffer bytes.Buffer
 
 	buffer.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -86,9 +127,10 @@ func render(input model.ThemeFile) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-func convertTheme(input model.ThemeFile) themeFile {
+func convertTheme(input model.ThemeFile, overrides []model.TokenColorRule) themeFile {
 	colors := input.Theme.Colors
-	globalDefaults := collectGlobalTokenDefaults(input.Theme.TokenColors)
+	tokenColors := append(append([]model.TokenColorRule{}, input.Theme.TokenColors...), overrides...)
+	globalDefaults := collectGlobalTokenDefaults(tokenColors)
 	background := convertColor(firstNonEmpty(colors["editor.background"], colors["terminal.background"], globalDefaults.Background, "#000000"), "#000000")
 	getColor := func(keys ...string) string {
 		for _, key := range keys {
@@ -114,8 +156,8 @@ func convertTheme(input model.ThemeFile) themeFile {
 		invisibles:    firstNonEmpty(getColor("editorWhitespace.foreground"), ""),
 	}
 
-	rules := make([]scopeRule, 0, len(input.Theme.TokenColors))
-	for _, tokenColor := range input.Theme.TokenColors {
+	rules := make([]scopeRule, 0, len(tokenColors))
+	for _, tokenColor := range tokenColors {
 		if len(tokenColor.Scope) == 0 {
 			continue
 		}
