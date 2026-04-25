@@ -56,6 +56,38 @@ func TestRenderIncludesGlobalSettingsAndScopes(t *testing.T) {
 	}
 }
 
+func TestRenderInjectsSublimeVariableFunctionAlias(t *testing.T) {
+	content, err := RenderTheme(model.ThemeFile{
+		Slug: "bearded-theme-monokai-stone",
+		Theme: model.VSCodeTheme{
+			Colors: map[string]string{
+				"editor.background": "#2A2D33",
+				"editor.foreground": "#dee0e4",
+			},
+			TokenColors: []model.TokenColorRule{
+				{
+					Scope: model.ScopeList{
+						"support.function",
+						"entity.name.function",
+						"meta.function-call",
+					},
+					Settings: model.TokenColorSettings{
+						Foreground: "#78dce8",
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("RenderTheme() error = %v", err)
+	}
+
+	output := string(content)
+	if !strings.Contains(output, "meta.function-call, variable.function") {
+		t.Fatalf("expected variable.function alias to be appended after meta.function-call\n%s", output)
+	}
+}
+
 func TestRenderThemeWithOverridesAppendsMirroredTextMateRules(t *testing.T) {
 	content, err := RenderThemeWithOverrides(model.ThemeFile{
 		Slug: "bearded-theme-monokai-metallian",

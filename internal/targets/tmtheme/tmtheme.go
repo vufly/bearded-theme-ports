@@ -174,7 +174,7 @@ func convertTheme(input model.ThemeFile, overrides []model.TokenColorRule) theme
 
 		rules = append(rules, scopeRule{
 			name:     tokenColor.Name,
-			scope:    strings.Join(tokenColor.Scope, ", "),
+			scope:    strings.Join(expandSublimeScopes(tokenColor.Scope), ", "),
 			settings: settings,
 		})
 	}
@@ -184,6 +184,43 @@ func convertTheme(input model.ThemeFile, overrides []model.TokenColorRule) theme
 		global: global,
 		rules:  rules,
 	}
+}
+
+// sublimeScopeAliases injects extra scopes alongside an existing upstream
+// scope so that bat's bundled Sublime/syntect grammars pick up the same
+// colors as the VS Code grammars the upstream theme targets.
+//
+// Each entry reads: when an upstream rule already lists the key scope, also
+// emit the listed alias scopes in the generated tmTheme rule. The color is
+// inherited from the upstream rule, so this stays correct across themes.
+var sublimeScopeAliases = map[string][]string{
+	// bat's JavaScript (Babel) grammar scopes plain function calls as
+	// `variable.function.js` inside `meta.function-call.js`. The upstream
+	// Bearded rule paints `meta.function-call` but has no `variable.function`
+	// entry, so those identifiers fall through to the generic `variable`
+	// rule. Mirror the function-call color onto `variable.function`.
+	"meta.function-call": {"variable.function"},
+}
+
+func expandSublimeScopes(scopes []string) []string {
+	if len(scopes) == 0 {
+		return scopes
+	}
+	seen := make(map[string]bool, len(scopes))
+	for _, scope := range scopes {
+		seen[scope] = true
+	}
+	expanded := append([]string(nil), scopes...)
+	for _, scope := range scopes {
+		for _, alias := range sublimeScopeAliases[scope] {
+			if seen[alias] {
+				continue
+			}
+			seen[alias] = true
+			expanded = append(expanded, alias)
+		}
+	}
+	return expanded
 }
 
 func collectGlobalTokenDefaults(rules []model.TokenColorRule) model.TokenColorSettings {
