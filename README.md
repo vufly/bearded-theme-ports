@@ -8,7 +8,7 @@ Generated files in this repository are built from upstream artifacts, not hand-m
 
 The repository also mirrors local VS Code TextMate override rules in `config/vscode_highlight.json5`, and those overrides are applied to tmTheme-derived targets.
 
-## Quick Start
+## 🚀 Quick Start
 
 Build everything:
 
@@ -34,7 +34,7 @@ List supported targets:
 go run . list targets
 ```
 
-## Target Overview
+## 🗺️ Target Overview
 
 | Target | Category | Source of truth | Output | Release asset | Install scripts |
 | --- | --- | --- | --- | --- | --- |
@@ -55,51 +55,27 @@ go run . list targets
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
 
-## Products
+##  Products
 
 Each product section below is collapsible to keep the README easier to scan.
 
-### Editors
+### ✍️ Editors
 
 <details>
 <summary><strong>Helix</strong> — tree-sitter-based Helix themes</summary>
 
 Generates tree-sitter-based Helix theme files using the upstream Zed theme build as the syntax style source of truth.
 
-Source of truth:
-
-- upstream Zed theme build
-
-Output location after build:
-
-- `dist/helix/`
-
-Release assets:
-
-- `bearded-theme-ports.zip`
-- `bearded-theme-ports-helix.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-helix.sh`
-- Windows PowerShell installer: `scripts/install-helix.ps1`
-- example config: `examples/helix-config.toml`
-
-Both scripts:
-
-- download the latest `bearded-theme-ports-helix.zip` release asset
-- install the `.toml` files into your Helix themes directory
+Install scripts download latest `bearded-theme-ports-helix.zip` and install `.toml` files into Helix themes directory.
 
 To install manually:
 
 - copy the `.toml` files into `~/.config/helix/themes/` on macOS/Linux
 - copy the `.toml` files into `%AppData%\helix\themes\` on Windows
 
-Then set the theme in your Helix config:
+Then set theme in your Helix config. Example: [`examples/helix-config.toml`](examples/helix-config.toml).
 
-- [`examples/helix-config.toml`](examples/helix-config.toml)
-
-#### Automatic install
+#### ⚡ Automatic install
 
 macOS/Linux:
 
@@ -132,40 +108,16 @@ powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]:
 
 Generates tree-sitter-based Neovim colorschemes using the upstream Zed theme build as the syntax style source of truth.
 
-Source of truth:
-
-- upstream Zed theme build
-
-Output location after build:
-
-- `dist/neovim/`
-
-Release assets:
-
-- `bearded-theme-ports.zip`
-- `bearded-theme-ports-neovim.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-neovim.sh`
-- Windows PowerShell installer: `scripts/install-neovim.ps1`
-- example config: `examples/neovim.lua`
-
-Both scripts:
-
-- download the latest `bearded-theme-ports-neovim.zip` release asset
-- install the `.lua` colorscheme files into your Neovim colors directory
+Install scripts download latest `bearded-theme-ports-neovim.zip` and install `.lua` colorscheme files into Neovim colors directory.
 
 To install manually:
 
 - copy the `.lua` files into `~/.config/nvim/colors/` on macOS/Linux
 - copy the `.lua` files into `%LocalAppData%\nvim\colors\` on Windows
 
-Then enable the colorscheme in your Neovim config:
+Then enable colorscheme in your Neovim config. Example: [`examples/neovim.lua`](examples/neovim.lua).
 
-- [`examples/neovim.lua`](examples/neovim.lua)
-
-#### Automatic install
+#### ⚡ Automatic install
 
 macOS/Linux:
 
@@ -193,121 +145,23 @@ powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]:
 
 </details>
 
-### Terminal and theme formats
-
-<details>
-<summary><strong>Codex</strong> — TextMate themes for Codex CLI</summary>
-
-Generates `.tmTheme` files for Codex CLI.
-
-Source of truth:
-
-- upstream VS Code theme build
-- rendered through the same TextMate-compatible format used by the `tmtheme` target
-
-Reference:
-
-- <https://developers.openai.com/codex/cli/features#syntax-highlighting-and-themes>
-
-Output location after build:
-
-- `dist/codex/`
-
-Release assets:
-
-- `bearded-theme-ports-codex.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-codex.sh`
-- Windows PowerShell installer: `scripts/install-codex.ps1`
-- example config: `examples/codex-config.toml`
-
-Both scripts:
-
-- download the latest `bearded-theme-ports-codex.zip` release asset
-- install the `.tmTheme` files into `$CODEX_HOME/themes/`
-- if `CODEX_HOME` is unset, they use `~/.codex/themes/`
-
-To install manually:
-
-- copy the `.tmTheme` files into `$CODEX_HOME/themes/`
-- if `CODEX_HOME` is unset, use `~/.codex/themes/`
-
-Local install from this repo:
-
-```bash
-go run . build --install codex
-```
-
-#### Automatic install
-
-macOS/Linux:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
-```
-
-or with `wget`:
-
-```bash
-wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
-```
-
-Windows, inside PowerShell or `pwsh`:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
-```
-
-Windows, from `cmd.exe`:
-
-```cmd
-powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-codex.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
-```
-
-Example config:
-
-- [`examples/codex-config.toml`](examples/codex-config.toml)
-
-</details>
+### 🖥️ Terminal Emulators
 
 <details>
 <summary><strong>WezTerm</strong> — WezTerm color schemes and install scripts</summary>
 
 Generates a full set of Bearded Theme color scheme files for WezTerm.
 
-Source of truth:
-
-- upstream VS Code theme build
-
-Output location after build:
-
-- `dist/wezterm/`
-
-Release assets:
-
-- `bearded-theme-ports.zip`
-- `bearded-theme-ports-wezterm.zip`
-
 To install manually:
 
 - copy the generated files into `~/.config/wezterm/themes/bearded-theme/` on macOS/Linux
 - copy the generated files into `%USERPROFILE%\.config\wezterm\themes\bearded-theme\` on Windows
 
-Example files:
+Example config: [`examples/wezterm.lua`](examples/wezterm.lua).
 
-- macOS/Linux installer: `scripts/install-wezterm.sh`
-- Windows PowerShell installer: `scripts/install-wezterm.ps1`
-- example WezTerm config: `examples/wezterm.lua`
+Install scripts download latest `bearded-theme-ports.zip`, create `~/.config/wezterm/themes/bearded-theme/` if needed, copy WezTerm theme files there.
 
-Both scripts:
-
-- download the latest `bearded-theme-ports.zip` release asset
-- create `~/.config/wezterm/themes/bearded-theme/` if needed
-- copy the WezTerm theme files into that folder
-
-#### Automatic install
+#### ⚡ Automatic install
 
 macOS/Linux:
 
@@ -333,13 +187,7 @@ Windows, from `cmd.exe`:
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-wezterm.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
-After installation, point WezTerm at the theme directory in your config.
-
-Start from the example config:
-
-- [`examples/wezterm.lua`](examples/wezterm.lua)
-
-On Windows, adjust the path to your home directory if needed.
+After installation, point WezTerm at the theme directory in your config (on Windows, adjust the path to your home directory if needed).
 
 </details>
 
@@ -348,26 +196,9 @@ On Windows, adjust the path to your home directory if needed.
 
 Generates `.conf` snippets for [Kitty](https://sw.kovidgoyal.net/kitty/conf/#color-scheme).
 
-Source of truth:
+Install script downloads latest `bearded-theme-ports-kitty.zip` and drops `.conf` files into `${XDG_CONFIG_HOME:-~/.config}/kitty/themes/`.
 
-- upstream VS Code theme build
-
-Output location after build:
-
-- `dist/kitty/`
-
-Release assets:
-
-- `bearded-theme-ports-kitty.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-kitty.sh`
-
-The script downloads the latest `bearded-theme-ports-kitty.zip` and drops the
-`.conf` files into `${XDG_CONFIG_HOME:-~/.config}/kitty/themes/`.
-
-#### Automatic install
+#### ⚡ Automatic install (sh only)
 
 macOS/Linux:
 
@@ -393,28 +224,9 @@ To install manually:
 
 Generates TOML color schemes for [Alacritty](https://alacritty.org/config-alacritty.html#colors).
 
-Source of truth:
+Install scripts download latest `bearded-theme-ports-alacritty.zip` and drop `.toml` files into `${XDG_CONFIG_HOME:-~/.config}/alacritty/themes/`, or `%APPDATA%\alacritty\themes\` on Windows.
 
-- upstream VS Code theme build
-
-Output location after build:
-
-- `dist/alacritty/`
-
-Release assets:
-
-- `bearded-theme-ports-alacritty.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-alacritty.sh`
-- Windows PowerShell installer: `scripts/install-alacritty.ps1`
-
-Both scripts download the latest `bearded-theme-ports-alacritty.zip` and drop
-the `.toml` files into `${XDG_CONFIG_HOME:-~/.config}/alacritty/themes/` (or
-`%APPDATA%\alacritty\themes\` on Windows).
-
-#### Automatic install
+#### ⚡ Automatic install
 
 macOS/Linux:
 
@@ -458,26 +270,9 @@ import = ["~/.config/alacritty/themes/bearded-theme-<slug>.toml"]
 Generates [Ghostty](https://ghostty.org/docs/config/reference#theme) theme files
 (extensionless config files).
 
-Source of truth:
+Install script downloads latest `bearded-theme-ports-ghostty.zip` and drops theme files into `${XDG_CONFIG_HOME:-~/.config}/ghostty/themes/`.
 
-- upstream VS Code theme build
-
-Output location after build:
-
-- `dist/ghostty/`
-
-Release assets:
-
-- `bearded-theme-ports-ghostty.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-ghostty.sh`
-
-The script downloads the latest `bearded-theme-ports-ghostty.zip` and drops
-the theme files into `${XDG_CONFIG_HOME:-~/.config}/ghostty/themes/`.
-
-#### Automatic install
+#### ⚡ Automatic install (sh only)
 
 macOS/Linux:
 
@@ -504,19 +299,11 @@ To install manually:
 Generates color scheme JSON fragments for
 [Windows Terminal](https://learn.microsoft.com/windows/terminal/customize-settings/color-schemes).
 
-Source of truth:
-
-- upstream VS Code theme build
-
-Output location after build:
+Outputs:
 
 - `dist/windows-terminal/<slug>.json` — one scheme per file
 - `dist/windows-terminal/schemes.json` — every scheme as a single JSON array,
   convenient for bulk import
-
-Release assets:
-
-- `bearded-theme-ports-windows-terminal.zip`
 
 To install manually:
 
@@ -529,6 +316,158 @@ To install manually:
 </details>
 
 <details>
+<summary><strong>Termux</strong> — Android terminal color schemes</summary>
+
+Generates `colors.properties` snippets for
+[Termux](https://termux.dev/) on Android. Each Bearded Theme variant is one
+self-contained file the user copies into `~/.termux/colors.properties` and
+activates with `termux-reload-settings`.
+
+Install script downloads latest `bearded-theme-ports-termux.zip`, picks one variant, replaces `~/.termux/colors.properties`, calls `termux-reload-settings`, backs up existing file as `colors.properties.bak` on first overwrite.
+
+Slug selection order:
+
+1. first CLI argument (e.g. `install-termux.sh bearded-theme-vivid-purple`)
+2. `TERMUX_THEME` env var
+3. default `bearded-theme-monokai-stone`
+
+#### ⚡ Automatic install (sh only)
+
+Android / Termux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
+```
+
+pick a specific variant:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | TERMUX_THEME=bearded-theme-vivid-purple sh
+```
+
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
+```
+
+To install manually:
+
+```bash
+# Inside Termux, after downloading or syncing a single .properties file:
+mkdir -p ~/.termux
+cp bearded-theme-monokai-stone.properties ~/.termux/colors.properties
+termux-reload-settings
+```
+
+</details>
+
+### 🤖 Coding Agents
+
+<details>
+<summary><strong>Codex</strong> — TextMate themes for Codex CLI</summary>
+
+Generates `.tmTheme` files for Codex CLI, rendered through the same
+TextMate-compatible format used by the `tmtheme` target.
+
+Reference: <https://developers.openai.com/codex/cli/features#syntax-highlighting-and-themes>
+
+Example config: [`examples/codex-config.toml`](examples/codex-config.toml).
+
+Install scripts download latest `bearded-theme-ports-codex.zip` and install `.tmTheme` files into `$CODEX_HOME/themes/`, or `~/.codex/themes/` if `CODEX_HOME` unset.
+
+To install manually:
+
+- copy the `.tmTheme` files into `$CODEX_HOME/themes/`
+- if `CODEX_HOME` is unset, use `~/.codex/themes/`
+
+Local install from this repo:
+
+```bash
+go run . build --install codex
+```
+
+#### ⚡ Automatic install
+
+macOS/Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
+```
+
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
+```
+
+Windows, inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-codex.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+</details>
+
+<details>
+<summary><strong>OpenCode</strong> — JSON themes for OpenCode</summary>
+
+Generates JSON theme files for OpenCode.
+
+Reference: <https://opencode.ai/docs/themes/>.
+
+Example config: [`examples/opencode-tui.json`](examples/opencode-tui.json).
+
+Install scripts download latest `bearded-theme-ports-opencode.zip` and install `.json` files into OpenCode themes directory.
+
+To install manually:
+
+- copy the `.json` files into `~/.config/opencode/themes/` on macOS/Linux
+- copy the `.json` files into `%AppData%\\opencode\\themes\\` on Windows
+
+Local install from this repo:
+
+```bash
+go run . build --install opencode
+```
+
+#### ⚡ Automatic install
+
+macOS/Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
+```
+
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
+```
+
+Windows, inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-opencode.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+</details>
+
+### 🎨 Browser & Theme Formats
+
+<details>
 <summary><strong>Firefox Color</strong> — Firefox browser theme presets</summary>
 
 Generates payloads compatible with [color.firefox.com](https://color.firefox.com/),
@@ -537,12 +476,9 @@ turned into a single click-to-open URL (`?theme=<encoded>`) that loads the
 theme directly in the site's editor for live preview, tweaking, and export
 to a real WebExtension theme add-on.
 
-Source of truth:
+UI colors only — Firefox Color has no syntax highlighting concept.
 
-- upstream VS Code theme build (UI colors only — Firefox Color has no syntax
-  highlighting concept)
-
-Output location after build:
+Outputs:
 
 - `dist/firefox-color/<slug>.url` — one-line shareable URL
 - `dist/firefox-color/<slug>.json` — raw theme schema (`{title,colors,images}`)
@@ -550,11 +486,7 @@ Output location after build:
 - `dist/firefox-color/index.html` — searchable browser of every theme; open
   it once and click any name to open that theme in `color.firefox.com`
 
-Release assets:
-
-- `bearded-theme-ports-firefox-color.zip`
-
-#### Quick input methods
+#### 🎨 Quick Input Methods
 
 Pick whichever is fastest for you:
 
@@ -664,70 +596,63 @@ with `go run . build firefox-color` to refresh.
 </details>
 
 <details>
-<summary><strong>Termux</strong> — Android terminal color schemes</summary>
+<summary><strong>tmTheme</strong> — legacy TextMate-compatible theme files</summary>
 
-Generates `colors.properties` snippets for
-[Termux](https://termux.dev/) on Android. Each Bearded Theme variant is one
-self-contained file the user copies into `~/.termux/colors.properties` and
-activates with `termux-reload-settings`.
+Generates legacy TextMate-compatible `.tmTheme` plist files for editors and tools that still consume the TextMate theme format.
 
-Source of truth:
+</details>
 
-- upstream VS Code theme build (terminal palette)
+<details>
+<summary><strong>bat</strong> — install the generated tmTheme output for bat</summary>
 
-Output location after build:
+`bat` supports custom themes in legacy `.tmTheme` format, so the generated `tmtheme` output can be installed directly into `bat`.
 
-- `dist/termux/<slug>.properties`
+Relationship to generated outputs:
 
-Release assets:
+- `bat` does not have own generated theme format in this repo
+- it installs `tmtheme` output from `dist/tmtheme/`
 
-- `bearded-theme-ports-termux.zip`
+Reference: <https://github.com/sharkdp/bat#adding-new-themes>.
 
-Example files:
+Example config: [`examples/bat.conf`](examples/bat.conf).
 
-- Termux installer: `scripts/install-termux.sh`
+Install scripts download latest `bearded-theme-ports-tmtheme.zip`, install `.tmTheme` files into `$(bat --config-dir)/themes`, run `bat cache --build`.
 
-The script downloads the latest `bearded-theme-ports-termux.zip`, picks one
-variant, replaces `~/.termux/colors.properties`, and calls
-`termux-reload-settings`. It backs up any pre-existing `colors.properties`
-as `colors.properties.bak` on the first overwrite.
-
-Slug selection order:
-
-1. first CLI argument (e.g. `install-termux.sh bearded-theme-vivid-purple`)
-2. `TERMUX_THEME` env var
-3. default `bearded-theme-monokai-stone`
-
-#### Automatic install
-
-Android / Termux:
+Local install from this repo:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
+go run . build --install bat
 ```
 
-pick a specific variant:
+#### ⚡ Automatic install
+
+macOS/Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | TERMUX_THEME=bearded-theme-vivid-purple sh
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.sh | sh
 ```
 
 or with `wget`:
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.sh | sh
 ```
 
-To install manually:
+Windows, inside PowerShell or `pwsh`:
 
-```bash
-# Inside Termux, after downloading or syncing a single .properties file:
-mkdir -p ~/.termux
-cp bearded-theme-monokai-stone.properties ~/.termux/colors.properties
-termux-reload-settings
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-bat.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-bat.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
 </details>
+
+### 🪟 Multiplexers
 
 <details>
 <summary><strong>Zellij</strong> — KDL themes for the Zellij multiplexer</summary>
@@ -737,27 +662,9 @@ schema (`fg`, `bg`, 8 ANSI colors, plus `orange`). The legacy schema is the
 one virtually every published Zellij theme pack uses (dracula, gruvbox,
 catppuccin, tokyonight) and is fully supported on current Zellij releases.
 
-Source of truth:
+Install scripts download latest `bearded-theme-ports-zellij.zip` and drop `.kdl` files into `${XDG_CONFIG_HOME:-~/.config}/zellij/themes/`.
 
-- upstream VS Code theme build (terminal palette + UI accents)
-
-Output location after build:
-
-- `dist/zellij/<slug>.kdl`
-
-Release assets:
-
-- `bearded-theme-ports-zellij.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-zellij.sh`
-- Windows PowerShell installer: `scripts/install-zellij.ps1`
-
-Both scripts download the latest `bearded-theme-ports-zellij.zip` and drop
-the `.kdl` files into `${XDG_CONFIG_HOME:-~/.config}/zellij/themes/`.
-
-#### Automatic install
+#### ⚡ Automatic install
 
 macOS/Linux:
 
@@ -798,179 +705,7 @@ theme "bearded-theme-monokai-stone"
 
 </details>
 
-<details>
-<summary><strong>OpenCode</strong> — JSON themes for OpenCode</summary>
-
-Generates JSON theme files for OpenCode.
-
-Source of truth:
-
-- upstream VS Code theme build
-
-Reference:
-
-- <https://opencode.ai/docs/themes/>
-
-Output location after build:
-
-- `dist/opencode/`
-
-Release assets:
-
-- `bearded-theme-ports-opencode.zip`
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-opencode.sh`
-- Windows PowerShell installer: `scripts/install-opencode.ps1`
-- example config: `examples/opencode-tui.json`
-
-Both scripts:
-
-- download the latest `bearded-theme-ports-opencode.zip` release asset
-- install the `.json` files into your OpenCode themes directory
-
-To install manually:
-
-- copy the `.json` files into `~/.config/opencode/themes/` on macOS/Linux
-- copy the `.json` files into `%AppData%\\opencode\\themes\\` on Windows
-
-Local install from this repo:
-
-```bash
-go run . build --install opencode
-```
-
-#### Automatic install
-
-macOS/Linux:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
-```
-
-or with `wget`:
-
-```bash
-wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
-```
-
-Windows, inside PowerShell or `pwsh`:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
-```
-
-Windows, from `cmd.exe`:
-
-```cmd
-powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-opencode.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
-```
-
-Example config:
-
-- [`examples/opencode-tui.json`](examples/opencode-tui.json)
-
-</details>
-
-<details>
-<summary><strong>tmTheme</strong> — legacy TextMate-compatible theme files</summary>
-
-Generates legacy TextMate-compatible `.tmTheme` plist files for editors and tools that still consume the TextMate theme format.
-
-Source of truth:
-
-- upstream VS Code theme build
-
-Output location after build:
-
-- `dist/tmtheme/`
-
-Release assets:
-
-- `bearded-theme-ports.zip`
-- `bearded-theme-ports-tmtheme.zip`
-
-</details>
-
-<details>
-<summary><strong>bat</strong> — install the generated tmTheme output for bat</summary>
-
-`bat` supports custom themes in legacy `.tmTheme` format, so the generated `tmtheme` output can be installed directly into `bat`.
-
-Relationship to generated outputs:
-
-- `bat` does not have its own generated theme format in this repo
-- it installs the `tmtheme` output from `dist/tmtheme/`
-
-Reference:
-
-- <https://github.com/sharkdp/bat#adding-new-themes>
-
-Example files:
-
-- macOS/Linux installer: `scripts/install-bat.sh`
-- Windows PowerShell installer: `scripts/install-bat.ps1`
-- example config: `examples/bat.conf`
-
-Both scripts:
-
-- download the latest `bearded-theme-ports-tmtheme.zip` release asset
-- install the `.tmTheme` files into `$(bat --config-dir)/themes`
-- run `bat cache --build`
-
-Local install from this repo:
-
-```bash
-go run . build --install bat
-```
-
-This local install path:
-
-- builds the `tmtheme` output
-- copies the generated `.tmTheme` files into `$(bat --config-dir)/themes`
-- runs `bat cache --build`
-
-#### Automatic install
-
-macOS/Linux:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.sh | sh
-```
-
-or with `wget`:
-
-```bash
-wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.sh | sh
-```
-
-Windows, inside PowerShell or `pwsh`:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-bat.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
-```
-
-Windows, from `cmd.exe`:
-
-```cmd
-powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-bat.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
-```
-
-To use one of the installed themes:
-
-```bash
-bat --list-themes | grep bearded-theme
-bat --theme="bearded-theme-monokai-stone" README.md
-```
-
-You can also start from the example config:
-
-- [`examples/bat.conf`](examples/bat.conf)
-
-</details>
-
-### Git tools
+### 🔧 Git Tools
 
 <details>
 <summary><strong>Lazygit</strong> — YAML theme partials for the Lazygit TUI</summary>
@@ -980,19 +715,7 @@ partials matching the convention used by `catppuccin/lazygit`: each file
 contains a top-level `theme:` block plus `authorColors:`, ready to paste
 under your `gui:` section in `~/.config/lazygit/config.yml`.
 
-Source of truth:
-
-- upstream VS Code theme build (UI accents + terminal palette)
-
-Output location after build:
-
-- `dist/lazygit/<slug>.yml`
-
-Release assets:
-
-- `bearded-theme-ports-lazygit.zip`
-
-#### Quick install
+#### ⚡ Quick Install
 
 Open `~/.config/lazygit/config.yml` and paste the file contents under your
 `gui:` block. Indented example:
@@ -1026,45 +749,46 @@ Two outputs are produced per build:
 - `dist/delta/bearded-theme.gitconfig` — every theme as one consolidated
   file, mirroring `catppuccin/delta`'s packaging
 
-Source of truth:
-
-- upstream VS Code theme build (diff foreground + line decoration colors)
-
-Release assets:
-
-- `bearded-theme-ports-delta.zip`
-
-#### Quick install
+#### ⚡ Automatic install
 
 Install scripts copy both the consolidated file and every per-theme file into
-your git config directory. You can then include either the consolidated file
-or a single theme file.
+your git config directory.
 
-Include the consolidated file:
+macOS/Linux:
 
-```ini
-# ~/.gitconfig
-[include]
-    path = /absolute/path/to/bearded-theme.gitconfig
-
-[core]
-    pager = delta
-
-[interactive]
-    diffFilter = delta --color-only
-
-[delta]
-    features = bearded-theme-monokai-stone
-    navigate = true
-    side-by-side = true
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-delta.sh | sh
 ```
 
-Or include only one theme file:
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-delta.sh | sh
+```
+
+Windows, inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-delta.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-delta.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-delta.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-delta.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+#### Activate in your `~/.gitconfig`
+
+After installation, add the snippet below to wire delta in as your diff
+pager and activate one of the Bearded variants. You can include either the
+consolidated file or a single theme file.
 
 ```ini
 # ~/.gitconfig
 [include]
-    path = /absolute/path/to/bearded-theme-monokai-stone.gitconfig
+    # the consolidated file (every theme), or swap in a single bearded-theme-<slug>.gitconfig
+    path = /absolute/path/to/bearded-theme.gitconfig
 
 [core]
     pager = delta
@@ -1084,86 +808,34 @@ in lock-step when both are installed.
 
 </details>
 
-## Development
+## 🛠️ Development
 
 Prerequisites:
 
 - Go
 - one of `pnpm`, `bun`, or `npm` for preparing upstream artifacts
 
-Common commands:
+Common commands (`<target>` = any name from the table above; multiple targets
+may be combined in one command):
 
 ```bash
-go run . prepare-and-build          # build everything
-go run . prepare-and-build codex    # build one target
-go run . build --install bat        # build tmtheme and install it for bat
-go run . prepare-and-build helix    # build one target
-go run . build opencode             # build from already-prepared upstream artifacts
-go run . build wezterm              # build from already-prepared upstream artifacts
-go run . build --install codex      # build and install locally
-go run . build --install neovim     # build and install locally
-go run . list targets               # list supported targets
+go run . prepare-and-build              # build everything
+go run . prepare-and-build <target>...  # build one or more targets
+go run . build <target>...              # rebuild from already-prepared upstream artifacts
+go run . build --install <target>...    # build and install locally
+go run . list targets                   # list supported targets
 ```
 
-`prepare-upstream` builds the upstream VS Code and Zed theme outputs used by this repository.
-
-Full local workflow:
+Full local workflow when you want each step explicit:
 
 ```bash
 go run . sync
-go run . prepare-upstream
+go run . prepare-upstream   # build upstream VS Code and Zed theme outputs
 go run . build
 ```
 
-More examples:
+Generated output lands under `dist/<target>/` (plus `dist/metadata/`); see the
+[Target Overview](#-target-overview) table for the exact paths.
 
-```bash
-go run . prepare-and-build --install helix
-go run . prepare-and-build --install neovim
-go run . build --install bat
-go run . build --install codex
-go run . build --install helix
-go run . build --install neovim
-go run . build --install opencode
-go run . build --install wezterm
-go run . build --install codex helix neovim opencode
-go run . build codex
-go run . build helix
-go run . build neovim
-go run . build opencode
-go run . build wezterm
-go run . build tmtheme
-go run . build codex helix neovim opencode wezterm tmtheme
-go run . build --install codex helix neovim
-go run . prepare-and-build codex
-go run . prepare-and-build helix
-go run . prepare-and-build neovim
-go run . prepare-and-build opencode
-go run . prepare-and-build wezterm
-go run . prepare-and-build tmtheme
-go run . prepare-and-build --install codex helix neovim
-```
-
-List supported products:
-
-```bash
-go run . list targets
-```
-
-Generated output:
-
-- `dist/codex/`
-- `dist/helix/`
-- `dist/neovim/`
-- `dist/opencode/`
-- `dist/wezterm/`
-- `dist/tmtheme/`
-- `dist/metadata/`
-
-Upstream build package manager priority:
-
-- `pnpm`
-- `bun`
-- `npm`
-
-The tool uses the first one available on your machine.
+Upstream build package manager priority: `pnpm`, `bun`, `npm` — the tool uses
+the first one available on your machine.
