@@ -490,36 +490,21 @@ Outputs:
 - `dist/firefox-color/<slug>.url` — one-line shareable URL
 - `dist/firefox-color/<slug>.json` — raw theme schema (`{title,colors,images}`)
   matching what `color.firefox.com` round-trips through its URL parameter
-- `dist/firefox-color/index.html` — searchable browser of every theme; open
-  it once and click any name to open that theme in `color.firefox.com`
+- `dist/firefox-color/index.html` — searchable browser of every theme
 
 #### 🎨 Quick Input Methods
 
-Pick whichever is fastest for you:
+1. **Click a link in this README (recommended)**
+   Expand the **Firefox Color — install links** block below and click any
+   theme. It opens `color.firefox.com` with the theme already applied; hit
+   *Save your Firefox Color* to install it into Firefox.
 
-1. **One-click via the local index page (recommended)**
-   Open `dist/firefox-color/index.html` in any browser. Type to filter by name
-   or slug, then click a theme — it opens `color.firefox.com` with the theme
-   already applied. From there click *Save your Firefox Color* to install it
-   into Firefox.
+2. **Download the release zip and open `index.html`**
+   Grab `bearded-theme-ports-firefox-color.zip` from the GitHub releases,
+   unzip it, and double-click `index.html`. Filter by name/slug, click any
+   theme, then *Save your Firefox Color* on `color.firefox.com`.
 
-2. **Single URL paste**
-   `cat dist/firefox-color/bearded-theme-monokai-stone.url` → copy → paste in
-   the Firefox address bar.
-
-3. **xclip / wl-copy one-liner** (Linux)
-   ```bash
-   wl-copy < dist/firefox-color/bearded-theme-monokai-stone.url
-   # or: xclip -selection clipboard < dist/firefox-color/bearded-theme-monokai-stone.url
-   ```
-
-4. **From the GitHub release without checking out the repo**
-   Download `bearded-theme-ports-firefox-color.zip`, unzip it, and double-click
-   `index.html`.
-
-To install the resulting theme into Firefox itself, click _Save your Firefox
-Color_ on the site after loading a preset; it produces a normal browser
-add-on you can pin from `about:addons`.
+After saving, the resulting add-on can be pinned from `about:addons`.
 
 </details>
 
