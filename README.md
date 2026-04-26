@@ -99,31 +99,21 @@ Then set the theme in your Helix config:
 
 - [`examples/helix-config.toml`](examples/helix-config.toml)
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-helix.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-helix.ps1
-```
-
-Without checking out the repo:
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-helix.ps1"
@@ -132,13 +122,13 @@ Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/ma
 Remove-Item $tmp
 ```
 
-As a one-liner inside PowerShell or `pwsh`:
+or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-helix.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
-If you are launching it from `cmd.exe`, then use:
+Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-helix.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
@@ -184,31 +174,21 @@ Then enable the colorscheme in your Neovim config:
 
 - [`examples/neovim.lua`](examples/neovim.lua)
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-neovim.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-neovim.ps1
-```
-
-Without checking out the repo:
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-neovim.ps1"
@@ -217,13 +197,13 @@ Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/ma
 Remove-Item $tmp
 ```
 
-As a one-liner inside PowerShell or `pwsh`:
+or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-neovim.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
-If you are launching it from `cmd.exe`, then use:
+Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-neovim.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
@@ -278,31 +258,21 @@ Local install from this repo:
 go run . build --install codex
 ```
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-codex.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-codex.ps1
-```
-
-Without checking out the repo:
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"
@@ -311,13 +281,13 @@ Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/ma
 Remove-Item $tmp
 ```
 
-As a one-liner inside PowerShell or `pwsh`:
+or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
-If you are launching it from `cmd.exe`, then use:
+Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-codex.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
@@ -364,31 +334,21 @@ Both scripts:
 - create `~/.config/wezterm/themes/bearded-theme/` if needed
 - copy the WezTerm theme files into that folder
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-wezterm.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-wezterm.ps1
-```
-
-Without checking out the repo:
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"
@@ -397,13 +357,13 @@ Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/ma
 Remove-Item $tmp
 ```
 
-As a one-liner inside PowerShell or `pwsh`:
+or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
-If you are launching it from `cmd.exe`, then use:
+Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-wezterm.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
@@ -443,19 +403,15 @@ Example files:
 The script downloads the latest `bearded-theme-ports-kitty.zip` and drops the
 `.conf` files into `${XDG_CONFIG_HOME:-~/.config}/kitty/themes/`.
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-kitty.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-kitty.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-kitty.sh | sh
@@ -494,34 +450,30 @@ Both scripts download the latest `bearded-theme-ports-alacritty.zip` and drop
 the `.toml` files into `${XDG_CONFIG_HOME:-~/.config}/alacritty/themes/` (or
 `%APPDATA%\alacritty\themes\` on Windows).
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-alacritty.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-alacritty.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-alacritty.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-alacritty.ps1
-```
-
-Without checking out the repo (one-liner inside PowerShell or `pwsh`):
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-alacritty.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-alacritty.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-alacritty.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-alacritty.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
 To install manually:
@@ -561,19 +513,15 @@ Example files:
 The script downloads the latest `bearded-theme-ports-ghostty.zip` and drops
 the theme files into `${XDG_CONFIG_HOME:-~/.config}/ghostty/themes/`.
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-ghostty.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-ghostty.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-ghostty.sh | sh
@@ -786,29 +734,21 @@ Slug selection order:
 2. `TERMUX_THEME` env var
 3. default `bearded-theme-monokai-stone`
 
-#### Inside Termux (Android)
+#### Automatic install
 
-Check out the repo, then:
-
-```bash
-sh scripts/install-termux.sh
-# or pick a specific variant:
-sh scripts/install-termux.sh bearded-theme-vivid-purple
-```
-
-Without checking out the repo:
+Android / Termux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
 ```
 
-Pick a specific variant in the same one-liner:
+pick a specific variant:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | TERMUX_THEME=bearded-theme-vivid-purple sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
@@ -853,34 +793,30 @@ Example files:
 Both scripts download the latest `bearded-theme-ports-zellij.zip` and drop
 the `.kdl` files into `${XDG_CONFIG_HOME:-~/.config}/zellij/themes/`.
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-zellij.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-zellij.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-zellij.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-zellij.ps1
-```
-
-Without checking out the repo (one-liner inside PowerShell or `pwsh`):
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-zellij.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-zellij.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-zellij.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-zellij.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
 To install manually:
@@ -941,31 +877,21 @@ Local install from this repo:
 go run . build --install opencode
 ```
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-opencode.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-opencode.ps1
-```
-
-Without checking out the repo:
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"
@@ -974,13 +900,13 @@ Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/ma
 Remove-Item $tmp
 ```
 
-As a one-liner inside PowerShell or `pwsh`:
+or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
-If you are launching it from `cmd.exe`, then use:
+Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-opencode.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
@@ -1050,31 +976,21 @@ This local install path:
 - copies the generated `.tmTheme` files into `$(bat --config-dir)/themes`
 - runs `bat cache --build`
 
-#### macOS/Linux
+#### Automatic install
 
-```bash
-sh scripts/install-bat.sh
-```
-
-Without checking out the repo:
+macOS/Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.sh | sh
 ```
 
-Or with `wget`:
+or with `wget`:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.sh | sh
 ```
 
-#### Windows PowerShell
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-bat.ps1
-```
-
-Without checking out the repo:
+Windows, inside PowerShell or `pwsh`:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-bat.ps1"
@@ -1083,13 +999,13 @@ Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/ma
 Remove-Item $tmp
 ```
 
-As a one-liner inside PowerShell or `pwsh`:
+or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-bat.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
-If you are launching it from `cmd.exe`, then use:
+Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-bat.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
