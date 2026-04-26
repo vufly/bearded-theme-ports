@@ -116,15 +116,6 @@ wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scr
 Windows, inside PowerShell or `pwsh`:
 
 ```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-helix.ps1"
-Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1 -OutFile $tmp
-& $tmp
-Remove-Item $tmp
-```
-
-or as a one-liner:
-
-```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-helix.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-helix.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
@@ -189,15 +180,6 @@ wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scr
 ```
 
 Windows, inside PowerShell or `pwsh`:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-neovim.ps1"
-Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1 -OutFile $tmp
-& $tmp
-Remove-Item $tmp
-```
-
-or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-neovim.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-neovim.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
@@ -275,15 +257,6 @@ wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scr
 Windows, inside PowerShell or `pwsh`:
 
 ```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"
-Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1 -OutFile $tmp
-& $tmp
-Remove-Item $tmp
-```
-
-or as a one-liner:
-
-```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-codex.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
@@ -349,15 +322,6 @@ wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scr
 ```
 
 Windows, inside PowerShell or `pwsh`:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"
-Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1 -OutFile $tmp
-& $tmp
-Remove-Item $tmp
-```
-
-or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-wezterm.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-wezterm.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
@@ -894,15 +858,6 @@ wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scr
 Windows, inside PowerShell or `pwsh`:
 
 ```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"
-Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1 -OutFile $tmp
-& $tmp
-Remove-Item $tmp
-```
-
-or as a one-liner:
-
-```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-opencode.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
 ```
 
@@ -991,15 +946,6 @@ wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scr
 ```
 
 Windows, inside PowerShell or `pwsh`:
-
-```powershell
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-bat.ps1"
-Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1 -OutFile $tmp
-& $tmp
-Remove-Item $tmp
-```
-
-or as a one-liner:
 
 ```powershell
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-bat.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-bat.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
