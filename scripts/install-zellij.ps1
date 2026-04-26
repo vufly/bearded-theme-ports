@@ -2,10 +2,15 @@ $ErrorActionPreference = "Stop"
 
 $Repo = "vufly/bearded-theme-ports"
 $AssetUrl = "https://github.com/$Repo/releases/latest/download/bearded-theme-ports-zellij.zip"
-# Native Windows Zellij looks up its config under %APPDATA%\zellij\ via the
-# dirs crate's config_dir() — see
-# https://zellij.dev/news/remote-sessions-windows-cli/#native-windows-support
-$TargetDir = Join-Path $env:APPDATA "zellij\themes"
+# Install under $HOME\.config\zellij\themes on every platform (honoring
+# XDG_CONFIG_HOME when set) so the path stays consistent with darwin and
+# linux installs.
+if ($env:XDG_CONFIG_HOME) {
+  $ConfigRoot = $env:XDG_CONFIG_HOME
+} else {
+  $ConfigRoot = Join-Path $HOME ".config"
+}
+$TargetDir = Join-Path $ConfigRoot "zellij\themes"
 $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("bearded-theme-ports-zellij-" + [System.Guid]::NewGuid().ToString("N"))
 $ArchivePath = Join-Path $TempDir "bearded-theme-ports-zellij.zip"
 $ExtractDir = Join-Path $TempDir "extract"

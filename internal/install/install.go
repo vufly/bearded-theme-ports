@@ -242,15 +242,9 @@ func ghosttyThemesDir() string {
 }
 
 func zellijThemesDir() string {
-	// Native Windows Zellij looks under %APPDATA%\zellij\ via the dirs
-	// crate's config_dir(); see
-	// https://zellij.dev/news/remote-sessions-windows-cli/#native-windows-support
-	if runtime.GOOS == "windows" {
-		if appData := os.Getenv("APPDATA"); appData != "" {
-			return filepath.Join(appData, "zellij", "themes")
-		}
-	}
-
+	// Use $HOME/.config/zellij/themes on every platform (honoring
+	// XDG_CONFIG_HOME when set) so the install path stays consistent
+	// across darwin, linux and Windows.
 	return filepath.Join(configRootDir(), "zellij", "themes")
 }
 
