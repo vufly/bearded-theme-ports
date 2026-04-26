@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"math"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
+	"bearded-theme-ports/internal/colorutil"
 	"bearded-theme-ports/internal/model"
 	"bearded-theme-ports/internal/source"
+	"bearded-theme-ports/internal/strutil"
 )
 
 type themeFile struct {
@@ -135,29 +135,29 @@ func convertTheme(input model.ThemeFile, overrides []model.TokenColorRule) theme
 	colors := input.Theme.Colors
 	tokenColors := append(append([]model.TokenColorRule{}, input.Theme.TokenColors...), overrides...)
 	globalDefaults := collectGlobalTokenDefaults(tokenColors)
-	background := convertColor(firstNonEmpty(colors["editor.background"], colors["terminal.background"], globalDefaults.Background, "#000000"), "#000000")
+	background := colorutil.Flatten(strutil.FirstNonEmpty(colors["editor.background"], colors["terminal.background"], globalDefaults.Background, "#000000"), "#000000")
 	getColor := func(keys ...string) string {
 		for _, key := range keys {
 			if value := colors[key]; value != "" {
-				return convertColor(value, background)
+				return colorutil.Flatten(value, background)
 			}
 		}
 		return ""
 	}
 
-	foreground := firstNonEmpty(
+	foreground := strutil.FirstNonEmpty(
 		getColor("editor.foreground", "foreground", "terminal.foreground"),
-		convertColor(globalDefaults.Foreground, background),
+		colorutil.Flatten(globalDefaults.Foreground, background),
 		"#ffffff",
 	)
 
 	global := themeSettings{
 		background:    background,
 		foreground:    foreground,
-		caret:         firstNonEmpty(getColor("editorCursor.foreground", "terminalCursor.foreground"), foreground),
-		selection:     firstNonEmpty(getColor("editor.selectionBackground", "selection.background"), convertColor(globalDefaults.Background, background)),
-		lineHighlight: firstNonEmpty(getColor("editor.lineHighlightBackground", "editor.lineHighlightBorder"), ""),
-		invisibles:    firstNonEmpty(getColor("editorWhitespace.foreground"), ""),
+		caret:         strutil.FirstNonEmpty(getColor("editorCursor.foreground", "terminalCursor.foreground"), foreground),
+		selection:     strutil.FirstNonEmpty(getColor("editor.selectionBackground", "selection.background"), colorutil.Flatten(globalDefaults.Background, background)),
+		lineHighlight: strutil.FirstNonEmpty(getColor("editor.lineHighlightBackground", "editor.lineHighlightBorder"), ""),
+		invisibles:    strutil.FirstNonEmpty(getColor("editorWhitespace.foreground"), ""),
 	}
 
 	rules := make([]scopeRule, 0, len(tokenColors))
@@ -167,8 +167,8 @@ func convertTheme(input model.ThemeFile, overrides []model.TokenColorRule) theme
 		}
 
 		settings := themeSettings{
-			background: convertColor(tokenColor.Settings.Background, background),
-			foreground: convertColor(tokenColor.Settings.Foreground, background),
+			background: colorutil.Flatten(tokenColor.Settings.Background, background),
+			foreground: colorutil.Flatten(tokenColor.Settings.Foreground, background),
 			fontStyle:  strings.TrimSpace(tokenColor.Settings.FontStyle),
 		}
 
@@ -184,7 +184,7 @@ func convertTheme(input model.ThemeFile, overrides []model.TokenColorRule) theme
 	}
 
 	return themeFile{
-		name:          formatThemeName(input.Slug),
+		name:          strutil.FormatThemeName(input.Slug),
 		semanticClass: formatSemanticClass(input.Slug, input.IsLight),
 		global:        global,
 		rules:         rules,
@@ -322,219 +322,3 @@ func escapeXML(value string) string {
 	return buffer.String()
 }
 
-func formatThemeName(themeName string) string {
-	baseName := strings.TrimPrefix(themeName, "bearded-theme-")
-	parts := strings.Fields(strings.ReplaceAll(baseName, "-", " "))
-	for index, part := range parts {
-		if part == "" {
-			continue
-		}
-		parts[index] = strings.ToUpper(part[:1]) + strings.ToLower(part[1:])
-	}
-	return "Bearded Theme " + strings.Join(parts, " ")
-}
-
-func firstNonEmpty(values ...string) string {
-	for _, value := range values {
-		if value != "" {
-			return value
-		}
-	}
-	return ""
-}
-
-func convertColor(color string, backgroundColor string) string {
-	if color == "" {
-		return ""
-	}
-	if len(color) != 9 || !strings.HasPrefix(color, "#") {
-		return color
-	}
-
-	foreground, ok := parseHexColor(color[:7])
-	if !ok {
-		return color
-	}
-	background, ok := parseHexColor(backgroundColor)
-	if !ok {
-		background = rgb{}
-	}
-	alphaValue, err := strconv.ParseUint(color[7:], 16, 8)
-	if err != nil {
-		return color
-	}
-	alpha := float64(alphaValue) / 255.0
-	return mix(background, foreground, alpha).hex()
-}
-
-type rgb struct {
-	r uint8
-	g uint8
-	b uint8
-}
-
-type xyz struct {
-	x float64
-	y float64
-	z float64
-	a float64
-}
-
-type lab struct {
-	l     float64
-	a     float64
-	b     float64
-	alpha float64
-}
-
-func parseHexColor(value string) (rgb, bool) {
-	if len(value) != 7 || !strings.HasPrefix(value, "#") {
-		return rgb{}, false
-	}
-	rValue, err := strconv.ParseUint(value[1:3], 16, 8)
-	if err != nil {
-		return rgb{}, false
-	}
-	gValue, err := strconv.ParseUint(value[3:5], 16, 8)
-	if err != nil {
-		return rgb{}, false
-	}
-	bValue, err := strconv.ParseUint(value[5:7], 16, 8)
-	if err != nil {
-		return rgb{}, false
-	}
-	return rgb{r: uint8(rValue), g: uint8(gValue), b: uint8(bValue)}, true
-}
-
-func mix(background rgb, foreground rgb, weight float64) rgb {
-	backgroundLab := rgbToLab(background)
-	foregroundLab := rgbToLab(foreground)
-	return labToRGB(lab{
-		l:     clampFloat(backgroundLab.l*(1.0-weight)+foregroundLab.l*weight, 0, 400),
-		a:     backgroundLab.a*(1.0-weight) + foregroundLab.a*weight,
-		b:     backgroundLab.b*(1.0-weight) + foregroundLab.b*weight,
-		alpha: clampFloat(backgroundLab.alpha*(1.0-weight)+foregroundLab.alpha*weight, 0, 1),
-	})
-}
-
-func (value rgb) hex() string {
-	return fmt.Sprintf("#%02x%02x%02x", value.r, value.g, value.b)
-}
-
-func rgbToLab(value rgb) lab {
-	xyzValue := rgbToXYZ(value)
-	normalizedX := xyzValue.x / whitePointX
-	normalizedY := xyzValue.y / whitePointY
-	normalizedZ := xyzValue.z / whitePointZ
-	return lab{
-		l:     116.0*labPivot(normalizedY) - 16.0,
-		a:     500.0 * (labPivot(normalizedX) - labPivot(normalizedY)),
-		b:     200.0 * (labPivot(normalizedY) - labPivot(normalizedZ)),
-		alpha: xyzValue.a,
-	}
-}
-
-func labToRGB(value lab) rgb {
-	fy := (value.l + 16.0) / 116.0
-	fx := value.a/500.0 + fy
-	fz := fy - value.b/200.0
-	return xyzToRGB(xyz{
-		x: labInversePivot(fx) * whitePointX,
-		y: labLightnessToY(value.l) * whitePointY,
-		z: labInversePivot(fz) * whitePointZ,
-		a: clampFloat(value.alpha, 0, 1),
-	})
-}
-
-func rgbToXYZ(value rgb) xyz {
-	rLinear := srgbToLinear(float64(value.r))
-	gLinear := srgbToLinear(float64(value.g))
-	bLinear := srgbToLinear(float64(value.b))
-	return clampXYZ(xyz{
-		x: 1.0478112*(100.0*(0.4124564*rLinear+0.3575761*gLinear+0.1804375*bLinear)) + 0.0228866*(100.0*(0.2126729*rLinear+0.7151522*gLinear+0.0721750*bLinear)) - 0.0501270*(100.0*(0.0193339*rLinear+0.1191920*gLinear+0.9503041*bLinear)),
-		y: 0.0295424*(100.0*(0.4124564*rLinear+0.3575761*gLinear+0.1804375*bLinear)) + 0.9904844*(100.0*(0.2126729*rLinear+0.7151522*gLinear+0.0721750*bLinear)) - 0.0170491*(100.0*(0.0193339*rLinear+0.1191920*gLinear+0.9503041*bLinear)),
-		z: -0.0092345*(100.0*(0.4124564*rLinear+0.3575761*gLinear+0.1804375*bLinear)) + 0.0150436*(100.0*(0.2126729*rLinear+0.7151522*gLinear+0.0721750*bLinear)) + 0.7521316*(100.0*(0.0193339*rLinear+0.1191920*gLinear+0.9503041*bLinear)),
-		a: 1,
-	})
-}
-
-func xyzToRGB(value xyz) rgb {
-	adapted := xyz{
-		x: 0.9555766*value.x - 0.0230393*value.y + 0.0631636*value.z,
-		y: -0.0282895*value.x + 1.0099416*value.y + 0.0210077*value.z,
-		z: 0.0122982*value.x - 0.0204830*value.y + 1.3299098*value.z,
-		a: value.a,
-	}
-	return rgb{
-		r: clampByte(linearToSRGB(0.032404542*adapted.x - 0.015371385*adapted.y - 0.004985314*adapted.z)),
-		g: clampByte(linearToSRGB(-0.009692660*adapted.x + 0.018760108*adapted.y + 0.000415560*adapted.z)),
-		b: clampByte(linearToSRGB(0.000556434*adapted.x - 0.002040259*adapted.y + 0.010572252*adapted.z)),
-	}
-}
-
-func srgbToLinear(value float64) float64 {
-	value = value / 255.0
-	if value < 0.04045 {
-		return value / 12.92
-	}
-	return math.Pow((value+0.055)/1.055, 2.4)
-}
-
-func linearToSRGB(value float64) float64 {
-	if value > 0.0031308 {
-		return 255.0 * (1.055*math.Pow(value, 1.0/2.4) - 0.055)
-	}
-	return 255.0 * (12.92 * value)
-}
-
-func clampXYZ(value xyz) xyz {
-	return xyz{
-		x: clampFloat(value.x, 0, whitePointX),
-		y: clampFloat(value.y, 0, whitePointY),
-		z: clampFloat(value.z, 0, whitePointZ),
-		a: clampFloat(value.a, 0, 1),
-	}
-}
-
-func clampByte(value float64) uint8 {
-	return uint8(math.Round(clampFloat(value, 0, 255)))
-}
-
-func clampFloat(value float64, min float64, max float64) float64 {
-	if value < min {
-		return min
-	}
-	if value > max {
-		return max
-	}
-	return value
-}
-
-func labPivot(value float64) float64 {
-	if value > labPivotThreshold {
-		return math.Cbrt(value)
-	}
-	return (labPivotScale*value + 16.0) / 116.0
-}
-
-func labInversePivot(value float64) float64 {
-	if math.Pow(value, 3) > labPivotThreshold {
-		return math.Pow(value, 3)
-	}
-	return (116.0*value - 16.0) / labPivotScale
-}
-
-func labLightnessToY(value float64) float64 {
-	if value > 8.0 {
-		return math.Pow((value+16.0)/116.0, 3)
-	}
-	return value / labPivotScale
-}
-
-const (
-	whitePointX       = 96.422
-	whitePointY       = 100.0
-	whitePointZ       = 82.521
-	labPivotThreshold = 216.0 / 24389.0
-	labPivotScale     = 24389.0 / 27.0
-)

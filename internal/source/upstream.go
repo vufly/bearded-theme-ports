@@ -57,6 +57,22 @@ func WezTermOutputDir(root string) string {
 	return filepath.Join(root, "dist", "wezterm")
 }
 
+func KittyOutputDir(root string) string {
+	return filepath.Join(root, "dist", "kitty")
+}
+
+func AlacrittyOutputDir(root string) string {
+	return filepath.Join(root, "dist", "alacritty")
+}
+
+func GhosttyOutputDir(root string) string {
+	return filepath.Join(root, "dist", "ghostty")
+}
+
+func WindowsTerminalOutputDir(root string) string {
+	return filepath.Join(root, "dist", "windows-terminal")
+}
+
 func TMThemeOutputDir(root string) string {
 	return filepath.Join(root, "dist", "tmtheme")
 }

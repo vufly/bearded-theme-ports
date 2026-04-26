@@ -43,6 +43,10 @@ go run . list targets
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
+| Kitty | Terminal | VS Code | `dist/kitty/` | `bearded-theme-ports-kitty.zip` | No |
+| Alacritty | Terminal | VS Code | `dist/alacritty/` | `bearded-theme-ports-alacritty.zip` | No |
+| Ghostty | Terminal | VS Code | `dist/ghostty/` | `bearded-theme-ports-ghostty.zip` | No |
+| Windows Terminal | Terminal | VS Code | `dist/windows-terminal/` | `bearded-theme-ports-windows-terminal.zip` | No |
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
 
@@ -407,6 +411,114 @@ Start from the example config:
 - [`examples/wezterm.lua`](examples/wezterm.lua)
 
 On Windows, adjust the path to your home directory if needed.
+
+</details>
+
+<details>
+<summary><strong>Kitty</strong> — Kitty terminal color schemes</summary>
+
+Generates `.conf` snippets for [Kitty](https://sw.kovidgoyal.net/kitty/conf/#color-scheme).
+
+Source of truth:
+
+- upstream VS Code theme build
+
+Output location after build:
+
+- `dist/kitty/`
+
+Release assets:
+
+- `bearded-theme-ports-kitty.zip`
+
+To install manually:
+
+- copy the generated `bearded-theme-<slug>.conf` into `~/.config/kitty/themes/`
+- in `kitty.conf`, add: `include themes/bearded-theme-<slug>.conf`
+
+</details>
+
+<details>
+<summary><strong>Alacritty</strong> — Alacritty TOML color schemes</summary>
+
+Generates TOML color schemes for [Alacritty](https://alacritty.org/config-alacritty.html#colors).
+
+Source of truth:
+
+- upstream VS Code theme build
+
+Output location after build:
+
+- `dist/alacritty/`
+
+Release assets:
+
+- `bearded-theme-ports-alacritty.zip`
+
+To install manually:
+
+- copy the generated `bearded-theme-<slug>.toml` into `~/.config/alacritty/themes/`
+- in `alacritty.toml`, add:
+
+```toml
+[general]
+import = ["~/.config/alacritty/themes/bearded-theme-<slug>.toml"]
+```
+
+</details>
+
+<details>
+<summary><strong>Ghostty</strong> — Ghostty terminal themes</summary>
+
+Generates [Ghostty](https://ghostty.org/docs/config/reference#theme) theme files
+(extensionless config files).
+
+Source of truth:
+
+- upstream VS Code theme build
+
+Output location after build:
+
+- `dist/ghostty/`
+
+Release assets:
+
+- `bearded-theme-ports-ghostty.zip`
+
+To install manually:
+
+- copy the generated files into `~/.config/ghostty/themes/`
+- in `~/.config/ghostty/config`, add: `theme = bearded-theme-<slug>`
+
+</details>
+
+<details>
+<summary><strong>Windows Terminal</strong> — Windows Terminal color schemes</summary>
+
+Generates color scheme JSON fragments for
+[Windows Terminal](https://learn.microsoft.com/windows/terminal/customize-settings/color-schemes).
+
+Source of truth:
+
+- upstream VS Code theme build
+
+Output location after build:
+
+- `dist/windows-terminal/<slug>.json` — one scheme per file
+- `dist/windows-terminal/schemes.json` — every scheme as a single JSON array,
+  convenient for bulk import
+
+Release assets:
+
+- `bearded-theme-ports-windows-terminal.zip`
+
+To install manually:
+
+- open Windows Terminal, click _Open JSON file_
+- paste the contents of one of the per-theme JSON files into the `schemes`
+  array (or merge `schemes.json` into it for everything at once)
+- set the active scheme by name in your profile, for example
+  `"colorScheme": "Bearded Theme Monokai Stone"`
 
 </details>
 

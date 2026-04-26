@@ -11,12 +11,16 @@ import (
 	"bearded-theme-ports/internal/model"
 	"bearded-theme-ports/internal/output"
 	"bearded-theme-ports/internal/source"
+	"bearded-theme-ports/internal/targets/alacritty"
 	"bearded-theme-ports/internal/targets/codex"
+	"bearded-theme-ports/internal/targets/ghostty"
 	"bearded-theme-ports/internal/targets/helix"
+	"bearded-theme-ports/internal/targets/kitty"
 	"bearded-theme-ports/internal/targets/neovim"
 	"bearded-theme-ports/internal/targets/opencode"
 	"bearded-theme-ports/internal/targets/tmtheme"
 	"bearded-theme-ports/internal/targets/wezterm"
+	"bearded-theme-ports/internal/targets/windowsterminal"
 )
 
 type builderFunc func(root string, inputs buildInputs) ([]string, error)
@@ -319,6 +323,30 @@ var targetsByName = map[string]targetDefinition{
 		source: "vscode",
 		builder: func(root string, inputs buildInputs) ([]string, error) {
 			return wezterm.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"kitty": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return kitty.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"alacritty": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return alacritty.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"ghostty": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return ghostty.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"windows-terminal": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return windowsterminal.Build(root, inputs.VSCodeThemes)
 		},
 	},
 }

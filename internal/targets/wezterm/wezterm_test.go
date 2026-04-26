@@ -1,25 +1,38 @@
 package wezterm
 
-import "testing"
+import (
+	"strings"
+	"testing"
 
-func TestFormatThemeName(t *testing.T) {
-	tests := map[string]string{
-		"bearded-theme-monokai-metallian": "Bearded Theme Monokai Metallian",
-		"bearded-theme-hc-midnightvoid":   "Bearded Theme Hc Midnightvoid",
-		"bearded-theme-Themanopia":        "Bearded Theme Themanopia",
+	"bearded-theme-ports/internal/model"
+)
+
+func TestRenderProducesExpectedTOML(t *testing.T) {
+	content, err := render(model.ThemeFile{
+		Slug: "bearded-theme-monokai-stone",
+		Theme: model.VSCodeTheme{
+			Colors: map[string]string{
+				"editor.background":          "#1b1e27",
+				"terminal.foreground":        "#d0d3de",
+				"editor.selectionBackground": "#98a2b54d",
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("render() error = %v", err)
 	}
 
-	for input, want := range tests {
-		if got := formatThemeName(input); got != want {
-			t.Fatalf("formatThemeName(%q) = %q, want %q", input, got, want)
+	output := string(content)
+	checks := []string{
+		"name = \"Bearded Theme Monokai Stone\"",
+		"background = \"#1b1e27\"",
+		"foreground = \"#d0d3de\"",
+		// editor.selectionBackground is alpha-flattened against the background.
+		"selection_bg = \"#3d424e\"",
+	}
+	for _, check := range checks {
+		if !strings.Contains(output, check) {
+			t.Fatalf("expected output to contain %q\n%s", check, output)
 		}
-	}
-}
-
-func TestConvertColor(t *testing.T) {
-	got := convertColor("#98a2b54d", "#1b1e27")
-	want := "#3d424e"
-	if got != want {
-		t.Fatalf("convertColor() = %q, want %q", got, want)
 	}
 }
