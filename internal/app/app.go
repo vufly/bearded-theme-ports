@@ -13,15 +13,19 @@ import (
 	"bearded-theme-ports/internal/source"
 	"bearded-theme-ports/internal/targets/alacritty"
 	"bearded-theme-ports/internal/targets/codex"
+	"bearded-theme-ports/internal/targets/delta"
 	"bearded-theme-ports/internal/targets/firefoxcolor"
 	"bearded-theme-ports/internal/targets/ghostty"
 	"bearded-theme-ports/internal/targets/helix"
 	"bearded-theme-ports/internal/targets/kitty"
+	"bearded-theme-ports/internal/targets/lazygit"
 	"bearded-theme-ports/internal/targets/neovim"
 	"bearded-theme-ports/internal/targets/opencode"
+	"bearded-theme-ports/internal/targets/termux"
 	"bearded-theme-ports/internal/targets/tmtheme"
 	"bearded-theme-ports/internal/targets/wezterm"
 	"bearded-theme-ports/internal/targets/windowsterminal"
+	"bearded-theme-ports/internal/targets/zellij"
 )
 
 type builderFunc func(root string, inputs buildInputs) ([]string, error)
@@ -354,6 +358,30 @@ var targetsByName = map[string]targetDefinition{
 		source: "vscode",
 		builder: func(root string, inputs buildInputs) ([]string, error) {
 			return firefoxcolor.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"termux": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return termux.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"zellij": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return zellij.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"lazygit": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return lazygit.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"delta": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return delta.Build(root, inputs.VSCodeThemes)
 		},
 	},
 }

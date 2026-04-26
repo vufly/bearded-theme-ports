@@ -72,6 +72,22 @@ func FirefoxColorOutputDir(root string) string {
 	return filepath.Join(root, "dist", "firefox-color")
 }
 
+func TermuxOutputDir(root string) string {
+	return filepath.Join(root, "dist", "termux")
+}
+
+func ZellijOutputDir(root string) string {
+	return filepath.Join(root, "dist", "zellij")
+}
+
+func LazygitOutputDir(root string) string {
+	return filepath.Join(root, "dist", "lazygit")
+}
+
+func DeltaOutputDir(root string) string {
+	return filepath.Join(root, "dist", "delta")
+}
+
 func TMThemeOutputDir(root string) string {
 	return filepath.Join(root, "dist", "tmtheme")
 }

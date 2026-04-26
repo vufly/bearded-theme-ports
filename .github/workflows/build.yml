@@ -75,6 +75,14 @@ jobs:
           zip -r ../../bearded-theme-ports-windows-terminal.zip .
           cd ../firefox-color
           zip -r ../../bearded-theme-ports-firefox-color.zip .
+          cd ../termux
+          zip -r ../../bearded-theme-ports-termux.zip .
+          cd ../zellij
+          zip -r ../../bearded-theme-ports-zellij.zip .
+          cd ../lazygit
+          zip -r ../../bearded-theme-ports-lazygit.zip .
+          cd ../delta
+          zip -r ../../bearded-theme-ports-delta.zip .
 
       - name: Generate release notes
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -101,7 +109,7 @@ jobs:
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release edit "$TAG" --notes-file RELEASE_NOTES.md
-            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-codex.zip bearded-theme-ports-opencode.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip bearded-theme-ports-kitty.zip bearded-theme-ports-alacritty.zip bearded-theme-ports-ghostty.zip bearded-theme-ports-windows-terminal.zip bearded-theme-ports-firefox-color.zip --clobber
+            gh release upload "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-codex.zip bearded-theme-ports-opencode.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip bearded-theme-ports-kitty.zip bearded-theme-ports-alacritty.zip bearded-theme-ports-ghostty.zip bearded-theme-ports-windows-terminal.zip bearded-theme-ports-firefox-color.zip bearded-theme-ports-termux.zip bearded-theme-ports-zellij.zip bearded-theme-ports-lazygit.zip bearded-theme-ports-delta.zip --clobber
           else
-            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-codex.zip bearded-theme-ports-opencode.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip bearded-theme-ports-kitty.zip bearded-theme-ports-alacritty.zip bearded-theme-ports-ghostty.zip bearded-theme-ports-windows-terminal.zip bearded-theme-ports-firefox-color.zip --title "$TAG" --notes-file RELEASE_NOTES.md
+            gh release create "$TAG" bearded-theme-ports.zip bearded-theme-ports-wezterm.zip bearded-theme-ports-codex.zip bearded-theme-ports-opencode.zip bearded-theme-ports-tmtheme.zip bearded-theme-ports-helix.zip bearded-theme-ports-neovim.zip bearded-theme-ports-kitty.zip bearded-theme-ports-alacritty.zip bearded-theme-ports-ghostty.zip bearded-theme-ports-windows-terminal.zip bearded-theme-ports-firefox-color.zip bearded-theme-ports-termux.zip bearded-theme-ports-zellij.zip bearded-theme-ports-lazygit.zip bearded-theme-ports-delta.zip --title "$TAG" --notes-file RELEASE_NOTES.md
           fi
