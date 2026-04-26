@@ -1,4 +1,4 @@
-# bBearded-theme-ports
+# Bearded Theme Ports
 
 Tools for porting [Bearded Theme](https://github.com/BeardedBear/bearded-theme/) to other editors, terminals, and formats.
 
