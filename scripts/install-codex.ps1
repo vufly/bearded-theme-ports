@@ -1,11 +1,11 @@
 $ErrorActionPreference = "Stop"
 
 $Repo = "vufly/bearded-theme-ports"
-$AssetUrl = "https://github.com/$Repo/releases/latest/download/bearded-theme-ports-codex.zip"
+$AssetUrl = "https://github.com/$Repo/releases/latest/download/bearded-theme-ports-tmtheme.zip"
 $TargetRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME ".codex" }
 $TargetDir = Join-Path $TargetRoot "themes"
 $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("bearded-theme-ports-codex-" + [System.Guid]::NewGuid().ToString("N"))
-$ArchivePath = Join-Path $TempDir "bearded-theme-ports-codex.zip"
+$ArchivePath = Join-Path $TempDir "bearded-theme-ports-tmtheme.zip"
 $ExtractDir = Join-Path $TempDir "extract"
 
 try {

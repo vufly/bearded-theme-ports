@@ -38,7 +38,7 @@ go run . list targets
 
 | Target | Category | Source of truth | Output | Release asset | Install scripts |
 | --- | --- | --- | --- | --- | --- |
-| Codex | CLI theme | VS Code via `tmTheme` | `dist/codex/` | `bearded-theme-ports-codex.zip` | Yes |
+| Codex | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
 | Helix | Editor | Zed | `dist/helix/` | `bearded-theme-ports-helix.zip` | Yes |
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
@@ -367,14 +367,21 @@ termux-reload-settings
 <details>
 <summary><strong>Codex</strong> — TextMate themes for Codex CLI</summary>
 
-Generates `.tmTheme` files for Codex CLI, rendered through the same
-TextMate-compatible format used by the `tmtheme` target.
+Codex CLI consumes the same legacy `.tmTheme` plist format produced by the
+`tmtheme` target, so this repo does not generate a separate Codex output.
+Installing Codex copies the existing `dist/tmtheme/` files into the Codex
+themes directory.
+
+Relationship to generated outputs:
+
+- Codex does not have its own generated theme format in this repo
+- it installs `tmtheme` output from `dist/tmtheme/`
 
 Reference: <https://developers.openai.com/codex/cli/features#syntax-highlighting-and-themes>
 
 Example config: [`examples/codex-config.toml`](examples/codex-config.toml).
 
-Install scripts download latest `bearded-theme-ports-codex.zip` and install `.tmTheme` files into `$CODEX_HOME/themes/`, or `~/.codex/themes/` if `CODEX_HOME` unset.
+Install scripts download latest `bearded-theme-ports-tmtheme.zip` and install `.tmTheme` files into `$CODEX_HOME/themes/`, or `~/.codex/themes/` if `CODEX_HOME` unset.
 
 To install manually:
 

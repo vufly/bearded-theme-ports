@@ -12,7 +12,6 @@ import (
 	"bearded-theme-ports/internal/output"
 	"bearded-theme-ports/internal/source"
 	"bearded-theme-ports/internal/targets/alacritty"
-	"bearded-theme-ports/internal/targets/codex"
 	"bearded-theme-ports/internal/targets/delta"
 	"bearded-theme-ports/internal/targets/firefoxcolor"
 	"bearded-theme-ports/internal/targets/ghostty"
@@ -254,21 +253,27 @@ func parseTargets(args []string, installRequested bool) ([]string, []string, err
 	targets := make([]string, 0, len(args))
 	installTargets := make([]string, 0, len(args))
 	for _, target := range args {
-		if installRequested && target == "bat" {
+		// bat and codex do not produce their own dist/ output; they both
+		// consume dist/tmtheme/. Installing either of them implicitly builds
+		// the tmtheme target as its source of files.
+		if installRequested && (target == "bat" || target == "codex") {
 			if !seen["tmtheme"] {
 				seen["tmtheme"] = true
 				targets = append(targets, "tmtheme")
 			}
-			if !seenInstall["bat"] {
-				seenInstall["bat"] = true
-				installTargets = append(installTargets, "bat")
+			if !seenInstall[target] {
+				seenInstall[target] = true
+				installTargets = append(installTargets, target)
 			}
 			continue
 		}
 
 		if _, ok := targetsByName[target]; !ok {
-			if target == "bat" {
+			switch target {
+			case "bat":
 				return nil, nil, fmt.Errorf("unsupported build target %q (use --install bat to install the tmtheme output into bat)", target)
+			case "codex":
+				return nil, nil, fmt.Errorf("unsupported build target %q (use --install codex to install the tmtheme output into codex)", target)
 			}
 			return nil, nil, fmt.Errorf("unsupported build target %q", target)
 		}
@@ -298,12 +303,6 @@ func allTargets() []string {
 }
 
 var targetsByName = map[string]targetDefinition{
-	"codex": {
-		source: "vscode",
-		builder: func(root string, inputs buildInputs) ([]string, error) {
-			return codex.Build(root, inputs.VSCodeThemes)
-		},
-	},
 	"helix": {
 		source:  "zed",
 		builder: func(root string, inputs buildInputs) ([]string, error) { return helix.Build(root, inputs.ZedThemes) },

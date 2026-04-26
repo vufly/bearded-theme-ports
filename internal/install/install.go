@@ -65,7 +65,7 @@ func Install(root string, target string) (string, error) {
 			return runBatCacheBuild(batBin)
 		}
 	case "codex":
-		sourceDir = source.CodexOutputDir(root)
+		sourceDir = source.TMThemeOutputDir(root)
 		targetDir = codexThemesDir()
 	case "ghostty":
 		sourceDir = source.GhosttyOutputDir(root)

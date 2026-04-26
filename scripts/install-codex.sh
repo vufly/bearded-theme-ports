@@ -3,10 +3,10 @@
 set -eu
 
 REPO="vufly/bearded-theme-ports"
-ASSET_URL="https://github.com/${REPO}/releases/latest/download/bearded-theme-ports-codex.zip"
+ASSET_URL="https://github.com/${REPO}/releases/latest/download/bearded-theme-ports-tmtheme.zip"
 TARGET_DIR="${CODEX_HOME:-$HOME/.codex}/themes"
 TMP_DIR="$(mktemp -d)"
-ARCHIVE_PATH="$TMP_DIR/bearded-theme-ports-codex.zip"
+ARCHIVE_PATH="$TMP_DIR/bearded-theme-ports-tmtheme.zip"
 EXTRACT_DIR="$TMP_DIR/extract"
 
 cleanup() {

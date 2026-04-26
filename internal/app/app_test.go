@@ -22,3 +22,24 @@ func TestParseTargetsRejectsBatWithoutInstall(t *testing.T) {
 		t.Fatal("parseTargets() error = nil, want error")
 	}
 }
+
+func TestParseTargetsInstallCodexUsesTMThemeBuild(t *testing.T) {
+	targets, installTargets, err := parseTargets([]string{"codex"}, true)
+	if err != nil {
+		t.Fatalf("parseTargets() error = %v", err)
+	}
+
+	if len(targets) != 1 || targets[0] != "tmtheme" {
+		t.Fatalf("parseTargets() targets = %#v, want []string{\"tmtheme\"}", targets)
+	}
+	if len(installTargets) != 1 || installTargets[0] != "codex" {
+		t.Fatalf("parseTargets() installTargets = %#v, want []string{\"codex\"}", installTargets)
+	}
+}
+
+func TestParseTargetsRejectsCodexWithoutInstall(t *testing.T) {
+	_, _, err := parseTargets([]string{"codex"}, false)
+	if err == nil {
+		t.Fatal("parseTargets() error = nil, want error")
+	}
+}
