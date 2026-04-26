@@ -68,6 +68,10 @@ func WindowsTerminalOutputDir(root string) string {
 	return filepath.Join(root, "dist", "windows-terminal")
 }
 
+func FirefoxColorOutputDir(root string) string {
+	return filepath.Join(root, "dist", "firefox-color")
+}
+
 func TMThemeOutputDir(root string) string {
 	return filepath.Join(root, "dist", "tmtheme")
 }

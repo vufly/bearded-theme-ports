@@ -13,6 +13,7 @@ import (
 	"bearded-theme-ports/internal/source"
 	"bearded-theme-ports/internal/targets/alacritty"
 	"bearded-theme-ports/internal/targets/codex"
+	"bearded-theme-ports/internal/targets/firefoxcolor"
 	"bearded-theme-ports/internal/targets/ghostty"
 	"bearded-theme-ports/internal/targets/helix"
 	"bearded-theme-ports/internal/targets/kitty"
@@ -347,6 +348,12 @@ var targetsByName = map[string]targetDefinition{
 		source: "vscode",
 		builder: func(root string, inputs buildInputs) ([]string, error) {
 			return windowsterminal.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"firefox-color": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return firefoxcolor.Build(root, inputs.VSCodeThemes)
 		},
 	},
 }

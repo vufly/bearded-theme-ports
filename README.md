@@ -47,6 +47,7 @@ go run . list targets
 | Alacritty | Terminal | VS Code | `dist/alacritty/` | `bearded-theme-ports-alacritty.zip` | No |
 | Ghostty | Terminal | VS Code | `dist/ghostty/` | `bearded-theme-ports-ghostty.zip` | No |
 | Windows Terminal | Terminal | VS Code | `dist/windows-terminal/` | `bearded-theme-ports-windows-terminal.zip` | No |
+| Firefox Color | Browser theme | VS Code | `dist/firefox-color/` | `bearded-theme-ports-firefox-color.zip` | No |
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
 
@@ -519,6 +520,62 @@ To install manually:
   array (or merge `schemes.json` into it for everything at once)
 - set the active scheme by name in your profile, for example
   `"colorScheme": "Bearded Theme Monokai Stone"`
+
+</details>
+
+<details>
+<summary><strong>Firefox Color</strong> — Firefox browser theme presets</summary>
+
+Generates payloads compatible with [color.firefox.com](https://color.firefox.com/),
+Mozilla's interactive Firefox theme builder. Each Bearded Theme variant is
+turned into a single click-to-open URL (`?theme=<encoded>`) that loads the
+theme directly in the site's editor for live preview, tweaking, and export
+to a real WebExtension theme add-on.
+
+Source of truth:
+
+- upstream VS Code theme build (UI colors only — Firefox Color has no syntax
+  highlighting concept)
+
+Output location after build:
+
+- `dist/firefox-color/<slug>.url` — one-line shareable URL
+- `dist/firefox-color/<slug>.json` — raw theme schema (`{title,colors,images}`)
+  matching what `color.firefox.com` round-trips through its URL parameter
+- `dist/firefox-color/index.html` — searchable browser of every theme; open
+  it once and click any name to open that theme in `color.firefox.com`
+
+Release assets:
+
+- `bearded-theme-ports-firefox-color.zip`
+
+#### Quick input methods
+
+Pick whichever is fastest for you:
+
+1. **One-click via the local index page (recommended)**
+   Open `dist/firefox-color/index.html` in any browser. Type to filter by name
+   or slug, then click a theme — it opens `color.firefox.com` with the theme
+   already applied. From there click *Save your Firefox Color* to install it
+   into Firefox.
+
+2. **Single URL paste**
+   `cat dist/firefox-color/bearded-theme-monokai-stone.url` → copy → paste in
+   the Firefox address bar.
+
+3. **xclip / wl-copy one-liner** (Linux)
+   ```bash
+   wl-copy < dist/firefox-color/bearded-theme-monokai-stone.url
+   # or: xclip -selection clipboard < dist/firefox-color/bearded-theme-monokai-stone.url
+   ```
+
+4. **From the GitHub release without checking out the repo**
+   Download `bearded-theme-ports-firefox-color.zip`, unzip it, and double-click
+   `index.html`.
+
+To install the resulting theme into Firefox itself, click _Save your Firefox
+Color_ on the site after loading a preset; it produces a normal browser
+add-on you can pin from `about:addons`.
 
 </details>
 
