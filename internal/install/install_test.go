@@ -211,13 +211,11 @@ func TestInstall_Termux_UnknownSlugErrors(t *testing.T) {
 	}
 }
 
-func TestInstall_Delta_CopiesGitconfigAndRegistersIncludeOnce(t *testing.T) {
+func TestInstall_Delta_CopiesAllGitconfigFiles(t *testing.T) {
 	root := t.TempDir()
 	xdg := t.TempDir()
-	binDir := t.TempDir()
 
-	// Source asset: the consolidated gitconfig produced by the delta
-	// builder.
+	// Source assets: consolidated file plus one single-theme file.
 	deltaDir := filepath.Join(root, "dist", "delta")
 	if err := os.MkdirAll(deltaDir, 0o755); err != nil {
 		t.Fatalf("MkdirAll() error = %v", err)
@@ -225,73 +223,35 @@ func TestInstall_Delta_CopiesGitconfigAndRegistersIncludeOnce(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(deltaDir, "bearded-theme.gitconfig"), []byte("[delta \"x\"]\n"), 0o644); err != nil {
 		t.Fatalf("WriteFile() error = %v", err)
 	}
-
-	// A fake `git` that:
-	//   - returns an empty list for `config --global --get-all include.path`
-	//     (exit 1, no output) on first call;
-	//   - logs every invocation to a file we can inspect.
-	logPath := filepath.Join(root, "git.log")
-	gitScript := "#!/bin/sh\n" +
-		"echo \"$@\" >> " + shellQuote(logPath) + "\n" +
-		"if [ \"$1\" = \"config\" ] && [ \"$2\" = \"--global\" ] && [ \"$3\" = \"--get-all\" ]; then\n" +
-		"  exit 1\n" +
-		"fi\n" +
-		"exit 0\n"
-	if err := os.WriteFile(filepath.Join(binDir, "git"), []byte(gitScript), 0o755); err != nil {
-		t.Fatalf("WriteFile() git script error = %v", err)
+	if err := os.WriteFile(filepath.Join(deltaDir, "bearded-theme-monokai-stone.gitconfig"), []byte("[delta \"stone\"]\n"), 0o644); err != nil {
+		t.Fatalf("WriteFile() theme error = %v", err)
 	}
 
 	t.Setenv("XDG_CONFIG_HOME", xdg)
-	t.Setenv("PATH", binDir+string(os.PathListSeparator)+os.Getenv("PATH"))
 
-	targetPath, err := Install(root, "delta")
+	targetDir, err := Install(root, "delta")
 	if err != nil {
 		t.Fatalf("Install(delta) error = %v", err)
 	}
 
-	wantPath := filepath.Join(xdg, "git", "bearded-theme.gitconfig")
-	if targetPath != wantPath {
-		t.Fatalf("Install(delta) targetPath = %q, want %q", targetPath, wantPath)
+	wantDir := filepath.Join(xdg, "git")
+	if targetDir != wantDir {
+		t.Fatalf("Install(delta) targetDir = %q, want %q", targetDir, wantDir)
 	}
-	if _, err := os.Stat(wantPath); err != nil {
-		t.Fatalf("gitconfig missing at target: %v", err)
+	for _, name := range []string{"bearded-theme.gitconfig", "bearded-theme-monokai-stone.gitconfig"} {
+		path := filepath.Join(wantDir, name)
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("gitconfig missing at target: %v", err)
+		}
 	}
-
-	logBytes, err := os.ReadFile(logPath)
-	if err != nil {
-		t.Fatalf("ReadFile() log error = %v", err)
+	if got, err := os.ReadFile(filepath.Join(wantDir, "bearded-theme.gitconfig")); err != nil {
+		t.Fatalf("ReadFile() installed gitconfig error = %v", err)
+	} else if string(got) != "[delta \"x\"]\n" {
+		t.Fatalf("installed gitconfig = %q, want source contents", got)
 	}
-	log := string(logBytes)
-	if !strings.Contains(log, "config --global --get-all include.path") {
-		t.Fatalf("expected get-all probe in git log, got:\n%s", log)
-	}
-	if !strings.Contains(log, "config --global --add include.path "+wantPath) {
-		t.Fatalf("expected add include.path call in git log, got:\n%s", log)
-	}
-
-	// Replace the fake git with one that reports the path is already
-	// registered. The installer must then NOT call `--add` again.
-	gitScript2 := "#!/bin/sh\n" +
-		"echo \"$@\" >> " + shellQuote(logPath) + "\n" +
-		"if [ \"$1\" = \"config\" ] && [ \"$2\" = \"--global\" ] && [ \"$3\" = \"--get-all\" ]; then\n" +
-		"  printf %s " + shellQuote(wantPath) + "\n" +
-		"  exit 0\n" +
-		"fi\n" +
-		"exit 0\n"
-	if err := os.WriteFile(filepath.Join(binDir, "git"), []byte(gitScript2), 0o755); err != nil {
-		t.Fatalf("WriteFile() git script 2 error = %v", err)
-	}
-
-	if err := os.Truncate(logPath, 0); err != nil {
-		t.Fatalf("Truncate() log error = %v", err)
-	}
-
-	if _, err := Install(root, "delta"); err != nil {
-		t.Fatalf("Install(delta) second run error = %v", err)
-	}
-
-	logBytes2, _ := os.ReadFile(logPath)
-	if strings.Contains(string(logBytes2), "--add include.path") {
-		t.Fatalf("second install duplicated include.path entry:\n%s", logBytes2)
+	if got, err := os.ReadFile(filepath.Join(wantDir, "bearded-theme-monokai-stone.gitconfig")); err != nil {
+		t.Fatalf("ReadFile() installed per-theme gitconfig error = %v", err)
+	} else if string(got) != "[delta \"stone\"]\n" {
+		t.Fatalf("installed per-theme gitconfig = %q, want source contents", got)
 	}
 }

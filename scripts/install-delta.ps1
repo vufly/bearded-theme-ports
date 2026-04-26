@@ -1,18 +1,11 @@
 $ErrorActionPreference = "Stop"
 
-# Installs the consolidated bearded-theme.gitconfig and registers it via
-# `git config --global --add include.path`. After running, set
-# `[delta] features = bearded-theme-<slug>` to activate a variant.
-
-if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-  Write-Error "Missing git executable"
-  exit 1
-}
+# Installs all generated delta gitconfig files so users can include either the
+# consolidated file or only the specific variant files they want.
 
 $Repo = "vufly/bearded-theme-ports"
 $AssetUrl = "https://github.com/$Repo/releases/latest/download/bearded-theme-ports-delta.zip"
 $TargetDir = Join-Path $env:USERPROFILE ".config/git"
-$TargetFile = Join-Path $TargetDir "bearded-theme.gitconfig"
 $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("bearded-theme-ports-delta-" + [System.Guid]::NewGuid().ToString("N"))
 $ArchivePath = Join-Path $TempDir "bearded-theme-ports-delta.zip"
 $ExtractDir = Join-Path $TempDir "extract"
@@ -29,28 +22,25 @@ try {
 
   $SourceFile = Join-Path $ExtractDir "bearded-theme.gitconfig"
   if (-not (Test-Path $SourceFile)) {
-    Write-Error "Consolidated gitconfig missing from release asset"
+    Write-Error "Delta gitconfig files missing from release asset"
     exit 1
   }
 
-  Copy-Item -Path $SourceFile -Destination $TargetFile -Force
-  Write-Host "Installed delta presets into $TargetFile"
-
-  $existing = & git config --global --get-all include.path 2>$null
-  if ($existing -and ($existing -split "`n" | Where-Object { $_ -eq $TargetFile })) {
-    Write-Host "include.path already set; skipping git config update"
-  } else {
-    & git config --global --add include.path $TargetFile
-    Write-Host "Registered include.path = $TargetFile in your global git config"
-  }
+  Copy-Item -Path (Join-Path $ExtractDir "*") -Destination $TargetDir -Recurse -Force
+  Write-Host "Installed delta presets into $TargetDir"
 
   Write-Host ""
   Write-Host "Next steps:"
-  Write-Host "  1. Make sure delta is your pager:"
+  Write-Host "  1. Optionally add the manual [include] example from this repo's README."
+  Write-Host "  2. Make sure delta is your pager:"
   Write-Host "       git config --global core.pager delta"
   Write-Host "       git config --global interactive.diffFilter `"delta --color-only`""
-  Write-Host "  2. Activate a variant by name, for example:"
+  Write-Host "  3. Activate a variant by name, for example:"
   Write-Host "       git config --global delta.features bearded-theme-monokai-stone"
+  Write-Host ""
+  Write-Host "  Installed files include:"
+  Write-Host "       $TargetDir\bearded-theme-monokai-stone.gitconfig"
+  Write-Host "       $TargetDir\bearded-theme.gitconfig"
 }
 finally {
   if (Test-Path $TempDir) {

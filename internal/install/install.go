@@ -298,59 +298,24 @@ func installTermux(root string) (string, error) {
 	return targetPath, nil
 }
 
-// installDelta drops the consolidated bearded-theme.gitconfig into the
-// user's git config dir and registers it via `git config --global --add
-// include.path`, matching what scripts/install-delta.sh does. Re-running
-// is idempotent: an existing matching include.path entry is preserved
-// rather than duplicated.
+// installDelta copies all generated delta gitconfig files into the user's git
+// config dir so they can include either the consolidated file or only the
+// specific variant files they want.
 func installDelta(root string) (string, error) {
-	sourcePath := filepath.Join(source.DeltaOutputDir(root), "bearded-theme.gitconfig")
-	if _, err := os.Stat(sourcePath); err != nil {
-		return "", fmt.Errorf("delta consolidated gitconfig not found at %s: %w", sourcePath, err)
+	sourceDir := source.DeltaOutputDir(root)
+	if _, err := os.Stat(sourceDir); err != nil {
+		return "", fmt.Errorf("delta output not found at %s: %w", sourceDir, err)
 	}
 
 	targetDir := filepath.Join(configRootDir(), "git")
 	if err := os.MkdirAll(targetDir, 0o755); err != nil {
 		return "", err
 	}
-	targetPath := filepath.Join(targetDir, "bearded-theme.gitconfig")
-	if err := copyFile(sourcePath, targetPath); err != nil {
+	if err := copyDirContents(sourceDir, targetDir); err != nil {
 		return "", err
 	}
 
-	if err := registerDeltaInclude(targetPath); err != nil {
-		return "", err
-	}
-
-	return targetPath, nil
-}
-
-func registerDeltaInclude(path string) error {
-	gitBin, err := exec.LookPath("git")
-	if err != nil {
-		// git not installed: nothing to register, but the file is still in
-		// place. Fall back to a manual instruction rather than failing.
-		fmt.Fprintf(os.Stderr,
-			"git not found in PATH; add this manually:\n  [include]\n      path = %s\n",
-			path,
-		)
-		return nil
-	}
-
-	// `git config --get-all` exits non-zero when the key is unset; that's
-	// not an error for our purposes — we just treat it as "nothing
-	// registered yet".
-	output, _ := exec.Command(gitBin, "config", "--global", "--get-all", "include.path").Output()
-	for _, line := range strings.Split(strings.TrimSpace(string(output)), "\n") {
-		if line == path {
-			return nil
-		}
-	}
-
-	cmd := exec.Command(gitBin, "config", "--global", "--add", "include.path", path)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	return targetDir, nil
 }
 
 func batThemesDir() (string, string, error) {

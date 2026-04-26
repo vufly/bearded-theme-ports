@@ -1,4 +1,4 @@
-# bearded-theme-ports
+# bBearded-theme-ports
 
 Tools for porting [Bearded Theme](https://github.com/BeardedBear/bearded-theme/) to other editors, terminals, and formats.
 
@@ -43,15 +43,15 @@ go run . list targets
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
-| Kitty | Terminal | VS Code | `dist/kitty/` | `bearded-theme-ports-kitty.zip` | No |
-| Alacritty | Terminal | VS Code | `dist/alacritty/` | `bearded-theme-ports-alacritty.zip` | No |
-| Ghostty | Terminal | VS Code | `dist/ghostty/` | `bearded-theme-ports-ghostty.zip` | No |
+| Kitty | Terminal | VS Code | `dist/kitty/` | `bearded-theme-ports-kitty.zip` | Yes (sh) |
+| Alacritty | Terminal | VS Code | `dist/alacritty/` | `bearded-theme-ports-alacritty.zip` | Yes |
+| Ghostty | Terminal | VS Code | `dist/ghostty/` | `bearded-theme-ports-ghostty.zip` | Yes (sh) |
 | Windows Terminal | Terminal | VS Code | `dist/windows-terminal/` | `bearded-theme-ports-windows-terminal.zip` | No |
 | Firefox Color | Browser theme | VS Code | `dist/firefox-color/` | `bearded-theme-ports-firefox-color.zip` | No |
-| Termux | Mobile terminal | VS Code | `dist/termux/` | `bearded-theme-ports-termux.zip` | No |
-| Zellij | Terminal multiplexer | VS Code | `dist/zellij/` | `bearded-theme-ports-zellij.zip` | No |
+| Termux | Mobile terminal | VS Code | `dist/termux/` | `bearded-theme-ports-termux.zip` | Yes (sh) |
+| Zellij | Terminal multiplexer | VS Code | `dist/zellij/` | `bearded-theme-ports-zellij.zip` | Yes |
 | Lazygit | Git TUI | VS Code | `dist/lazygit/` | `bearded-theme-ports-lazygit.zip` | No |
-| Delta | Git diff pager | VS Code | `dist/delta/` | `bearded-theme-ports-delta.zip` | No |
+| Delta | Git diff pager | VS Code | `dist/delta/` | `bearded-theme-ports-delta.zip` | Yes |
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
 
@@ -436,6 +436,31 @@ Release assets:
 
 - `bearded-theme-ports-kitty.zip`
 
+Example files:
+
+- macOS/Linux installer: `scripts/install-kitty.sh`
+
+The script downloads the latest `bearded-theme-ports-kitty.zip` and drops the
+`.conf` files into `${XDG_CONFIG_HOME:-~/.config}/kitty/themes/`.
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-kitty.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-kitty.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-kitty.sh | sh
+```
+
 To install manually:
 
 - copy the generated `bearded-theme-<slug>.conf` into `~/.config/kitty/themes/`
@@ -459,6 +484,45 @@ Output location after build:
 Release assets:
 
 - `bearded-theme-ports-alacritty.zip`
+
+Example files:
+
+- macOS/Linux installer: `scripts/install-alacritty.sh`
+- Windows PowerShell installer: `scripts/install-alacritty.ps1`
+
+Both scripts download the latest `bearded-theme-ports-alacritty.zip` and drop
+the `.toml` files into `${XDG_CONFIG_HOME:-~/.config}/alacritty/themes/` (or
+`%APPDATA%\alacritty\themes\` on Windows).
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-alacritty.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-alacritty.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-alacritty.sh | sh
+```
+
+#### Windows PowerShell
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-alacritty.ps1
+```
+
+Without checking out the repo (one-liner inside PowerShell or `pwsh`):
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-alacritty.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-alacritty.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
 
 To install manually:
 
@@ -489,6 +553,31 @@ Output location after build:
 Release assets:
 
 - `bearded-theme-ports-ghostty.zip`
+
+Example files:
+
+- macOS/Linux installer: `scripts/install-ghostty.sh`
+
+The script downloads the latest `bearded-theme-ports-ghostty.zip` and drops
+the theme files into `${XDG_CONFIG_HOME:-~/.config}/ghostty/themes/`.
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-ghostty.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-ghostty.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-ghostty.sh | sh
+```
 
 To install manually:
 
@@ -682,7 +771,50 @@ Release assets:
 
 - `bearded-theme-ports-termux.zip`
 
-#### Quick install on a device
+Example files:
+
+- Termux installer: `scripts/install-termux.sh`
+
+The script downloads the latest `bearded-theme-ports-termux.zip`, picks one
+variant, replaces `~/.termux/colors.properties`, and calls
+`termux-reload-settings`. It backs up any pre-existing `colors.properties`
+as `colors.properties.bak` on the first overwrite.
+
+Slug selection order:
+
+1. first CLI argument (e.g. `install-termux.sh bearded-theme-vivid-purple`)
+2. `TERMUX_THEME` env var
+3. default `bearded-theme-monokai-stone`
+
+#### Inside Termux (Android)
+
+Check out the repo, then:
+
+```bash
+sh scripts/install-termux.sh
+# or pick a specific variant:
+sh scripts/install-termux.sh bearded-theme-vivid-purple
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
+```
+
+Pick a specific variant in the same one-liner:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | TERMUX_THEME=bearded-theme-vivid-purple sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-termux.sh | sh
+```
+
+To install manually:
 
 ```bash
 # Inside Termux, after downloading or syncing a single .properties file:
@@ -713,7 +845,45 @@ Release assets:
 
 - `bearded-theme-ports-zellij.zip`
 
-#### Quick install
+Example files:
+
+- macOS/Linux installer: `scripts/install-zellij.sh`
+- Windows PowerShell installer: `scripts/install-zellij.ps1`
+
+Both scripts download the latest `bearded-theme-ports-zellij.zip` and drop
+the `.kdl` files into `${XDG_CONFIG_HOME:-~/.config}/zellij/themes/`.
+
+#### macOS/Linux
+
+```bash
+sh scripts/install-zellij.sh
+```
+
+Without checking out the repo:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-zellij.sh | sh
+```
+
+Or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-zellij.sh | sh
+```
+
+#### Windows PowerShell
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-zellij.ps1
+```
+
+Without checking out the repo (one-liner inside PowerShell or `pwsh`):
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-zellij.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-zellij.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+To install manually:
 
 ```bash
 mkdir -p ~/.config/zellij/themes
@@ -1004,12 +1174,35 @@ Release assets:
 
 #### Quick install
 
-Add the consolidated file once, then pick a variant by name:
+Install scripts copy both the consolidated file and every per-theme file into
+your git config directory. You can then include either the consolidated file
+or a single theme file.
+
+Include the consolidated file:
 
 ```ini
 # ~/.gitconfig
 [include]
     path = /absolute/path/to/bearded-theme.gitconfig
+
+[core]
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    features = bearded-theme-monokai-stone
+    navigate = true
+    side-by-side = true
+```
+
+Or include only one theme file:
+
+```ini
+# ~/.gitconfig
+[include]
+    path = /absolute/path/to/bearded-theme-monokai-stone.gitconfig
 
 [core]
     pager = delta
