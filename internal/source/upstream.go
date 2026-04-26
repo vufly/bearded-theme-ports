@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -47,10 +46,6 @@ func InputThemesDir(root string) string {
 
 func ZedThemesPath(root string) string {
 	return filepath.Join(UpstreamDir(root), "dist", "zed", "themes", "bearded-theme.json")
-}
-
-func ThemeRegistryPath(root string) string {
-	return filepath.Join(UpstreamDir(root), "src", "shared", "theme-registry.ts")
 }
 
 func WezTermOutputDir(root string) string {
@@ -154,7 +149,7 @@ func LoadThemes(root string) ([]model.ThemeFile, error) {
 		return nil, fmt.Errorf("no theme JSON files found in %s; run prepare-upstream first", InputThemesDir(root))
 	}
 
-	lightSlugs, err := LoadLightThemeSlugs(root)
+	lightNames, err := LoadLightThemeNames(root)
 	if err != nil {
 		return nil, err
 	}
@@ -183,40 +178,34 @@ func LoadThemes(root string) ([]model.ThemeFile, error) {
 			Path:    path,
 			Slug:    slug,
 			Theme:   theme,
-			IsLight: lightSlugs[strings.TrimPrefix(slug, "bearded-theme-")],
+			IsLight: lightNames[normalizeThemeName(theme.Name)],
 		})
 	}
 
 	return themes, nil
 }
 
-// LoadLightThemeSlugs parses the upstream theme registry and returns a map of
-// short theme slugs (e.g. "monokai-stone") to whether the entry has a `light:
-// true` option. Slugs that aren't in the map default to dark.
+// LoadLightThemeNames reads the upstream Zed theme bundle and returns a map
+// of normalized theme names (e.g. "monokai stone") to whether the upstream
+// `appearance` is "light". Themes not in the map default to dark.
 //
-// We parse `src/shared/theme-registry.ts` directly rather than the contributed
-// VS Code metadata because the latter only distinguishes `vs`/`vs-dark`/
-// `hc-black`, where high-contrast light themes still appear as `hc-black`.
-func LoadLightThemeSlugs(root string) (map[string]bool, error) {
-	path := ThemeRegistryPath(root)
-	content, err := os.ReadFile(path)
+// We use the Zed bundle here (rather than the VS Code `uiTheme` metadata)
+// because the VS Code field collapses high-contrast light themes onto
+// `hc-black`, while Zed's `appearance` is always either "dark" or "light".
+func LoadLightThemeNames(root string) (map[string]bool, error) {
+	content, err := os.ReadFile(ZedThemesPath(root))
 	if err != nil {
-		return nil, fmt.Errorf("read theme registry: %w", err)
+		return nil, fmt.Errorf("read zed themes: %w", err)
 	}
 
-	// Each registry entry has `options: { ... }` followed by `slug: "..."`
-	// before the next entry, with no nested braces inside `options`.
-	pattern := regexp.MustCompile(`options:\s*\{([^}]*)\}[^}]*?slug:\s*"([^"]+)"`)
-	matches := pattern.FindAllSubmatch(content, -1)
-	if len(matches) == 0 {
-		return nil, fmt.Errorf("no theme entries parsed from %s", path)
+	var family model.ZedThemeFamily
+	if err := json.Unmarshal(content, &family); err != nil {
+		return nil, fmt.Errorf("parse zed themes: %w", err)
 	}
 
-	result := make(map[string]bool, len(matches))
-	for _, match := range matches {
-		options := string(match[1])
-		slug := string(match[2])
-		result[slug] = strings.Contains(options, "light: true")
+	result := make(map[string]bool, len(family.Themes))
+	for _, theme := range family.Themes {
+		result[normalizeThemeName(theme.Name)] = theme.Appearance == "light"
 	}
 	return result, nil
 }
