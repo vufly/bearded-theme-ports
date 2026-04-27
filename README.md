@@ -55,9 +55,9 @@ go run . list targets
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
 
-##  Products
+## 📦 Targets
 
-Each product section below is collapsible to keep the README easier to scan.
+Each target section below is collapsible to keep README easier to scan.
 
 ### ✍️ Editors
 
@@ -68,10 +68,7 @@ Generates tree-sitter-based Helix theme files using the upstream Zed theme build
 
 Install scripts download latest `bearded-theme-ports-helix.zip` and install `.toml` files into Helix themes directory.
 
-To install manually:
-
-- copy the `.toml` files into `~/.config/helix/themes/` on macOS/Linux
-- copy the `.toml` files into `%AppData%\helix\themes\` on Windows
+To install manually: copy `.toml` files into `~/.config/helix/themes/` on macOS/Linux, or `%AppData%\helix\themes\` on Windows.
 
 Then set theme in your Helix config. Example: [`examples/helix-config.toml`](examples/helix-config.toml).
 
@@ -110,10 +107,7 @@ Generates tree-sitter-based Neovim colorschemes using the upstream Zed theme bui
 
 Install scripts download latest `bearded-theme-ports-neovim.zip` and install `.lua` colorscheme files into Neovim colors directory.
 
-To install manually:
-
-- copy the `.lua` files into `~/.config/nvim/colors/` on macOS/Linux
-- copy the `.lua` files into `%LocalAppData%\nvim\colors\` on Windows
+To install manually: copy `.lua` files into `~/.config/nvim/colors/` on macOS/Linux, or `%LocalAppData%\nvim\colors\` on Windows.
 
 Then enable colorscheme in your Neovim config. Example: [`examples/neovim.lua`](examples/neovim.lua).
 
@@ -152,10 +146,7 @@ powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]:
 
 Generates a full set of Bearded Theme color scheme files for WezTerm.
 
-To install manually:
-
-- copy the generated files into `~/.config/wezterm/themes/bearded-theme/` on macOS/Linux
-- copy the generated files into `%USERPROFILE%\.config\wezterm\themes\bearded-theme\` on Windows
+To install manually: copy generated files into `~/.config/wezterm/themes/bearded-theme/` on macOS/Linux, or `%USERPROFILE%\.config\wezterm\themes\bearded-theme\` on Windows.
 
 Example config: [`examples/wezterm.lua`](examples/wezterm.lua).
 
@@ -212,10 +203,7 @@ or with `wget`:
 wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-kitty.sh | sh
 ```
 
-To install manually:
-
-- copy the generated `bearded-theme-<slug>.conf` into `~/.config/kitty/themes/`
-- in `kitty.conf`, add: `include themes/bearded-theme-<slug>.conf`
+To install manually: copy generated `bearded-theme-<slug>.conf` into `~/.config/kitty/themes/`, then add `include themes/bearded-theme-<slug>.conf` in `kitty.conf`.
 
 </details>
 
@@ -305,13 +293,7 @@ Outputs:
 - `dist/windows-terminal/schemes.json` — every scheme as a single JSON array,
   convenient for bulk import
 
-To install manually:
-
-- open Windows Terminal, click _Open JSON file_
-- paste the contents of one of the per-theme JSON files into the `schemes`
-  array (or merge `schemes.json` into it for everything at once)
-- set the active scheme by name in your profile, for example
-  `"colorScheme": "Bearded Theme Monokai Stone"`
+To install manually: open Windows Terminal, click _Open JSON file_, paste one per-theme JSON file into `schemes` array (or merge `schemes.json` for all), then set active scheme in profile, e.g. `"colorScheme": "Bearded Theme Monokai Stone"`.
 
 </details>
 
@@ -433,10 +415,7 @@ Example config: [`examples/opencode-tui.json`](examples/opencode-tui.json).
 
 Install scripts download latest `bearded-theme-ports-opencode.zip` and install `.json` files into OpenCode themes directory.
 
-To install manually:
-
-- copy the `.json` files into `~/.config/opencode/themes/` on macOS/Linux
-- copy the `.json` files into `%AppData%\\opencode\\themes\\` on Windows
+To install manually: copy `.json` files into `~/.config/opencode/themes/` on macOS/Linux, or `%AppData%\\opencode\\themes\\` on Windows.
 
 Local install from this repo:
 

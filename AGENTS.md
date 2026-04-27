@@ -2,43 +2,38 @@
 
 ## Purpose
 
-This repository ports Bearded Theme to other tools and formats.
+Repo port Bearded Theme to many tools/formats.
 
-When adding a new target, prefer the smallest implementation that matches the target's real capabilities and existing conventions.
+Goal: smallest correct port, deterministic output, source-driven generation.
 
-## Repository Rules
+## Core Rules
 
-- Do not use the upstream TypeScript source directly unless there is a clear need.
-- Prefer generated upstream artifacts as source input.
-- Keep target outputs under `dist/<target>/`.
-- Keep release assets split per product.
-- Keep output deterministic.
-- Keep changes minimal and local to the new target.
+- Prefer generated upstream artifacts, not upstream TS source.
+- Keep outputs under `dist/<target>/`.
+- Keep release assets split per target when useful.
+- Reuse shared color/style logic. No duplicate converters unless target truly different.
+- Keep names/slugs stable across targets.
+- Update docs + packaging when adding target.
 
-## Source Of Truth
+## Upstream Sources
 
-There are two main upstream inputs in this repo:
+Use source closest to target model.
 
-1. VS Code build output
+### VS Code build output
+
 - Path: `.cache/upstream/bearded-theme/dist/vscode/themes/*.json`
-- Used for: `wezterm`, `tmtheme`
+- Use for: terminal targets, tmTheme-style targets, UI/token-color driven targets
+- Examples: `wezterm`, `tmtheme`, `bat`, `delta`, `kitty`, `alacritty`, `ghostty`, `zellij`, `termux`, `lazygit`, `opencode`, `codex`, `windows-terminal`, `firefox-color`
 
-2. Zed build output
+### Zed build output
+
 - Path: `.cache/upstream/bearded-theme/dist/zed/themes/bearded-theme.json`
-- Used for: tree-sitter-oriented targets such as `helix`, `neovim`
-
-Choose the source that is closest to the target model.
-
-Examples:
-
-- Terminal/theme-file targets that map well from VS Code token/UI colors:
-  use VS Code JSON
-- Tree-sitter/editor targets that align more naturally with semantic syntax roles:
-  use Zed theme syntax roles
+- Use for: tree-sitter-oriented editor targets
+- Examples: `helix`, `neovim`
 
 ## Build Workflow
 
-Local workflow:
+Standard local flow:
 
 ```bash
 go run . sync
@@ -46,110 +41,119 @@ go run . prepare-upstream
 go run . build <target>
 ```
 
-One-command workflow:
+One-command flow:
 
 ```bash
 go run . prepare-and-build <target>
 ```
 
-Local install for quick testing:
+Local install after build:
 
 ```bash
 go run . build --install <target>
 ```
 
-## Adding A New Target
+Build all targets:
 
-When implementing a new target:
+```bash
+go run . build
+```
 
-1. Decide the source model
-- `vscode`
-- `zed`
+## Add New Target Checklist
 
-2. Add the output directory helper in `internal/source/upstream.go` if needed
+### 1. Choose source
 
-3. Create a target package under `internal/targets/<target>/`
+- [ ] Pick `vscode` or `zed`
+- [ ] Confirm source matches target semantics
 
-4. Implement:
-- `Build(root string, inputs ...) ([]string, error)`
+### 2. Add output path helper
 
-5. Wire the target into `internal/app/app.go`
-- add to `targetsByName`
-- choose `source: "vscode"` or `source: "zed"`
+- [ ] Add helper in `internal/source/upstream.go` if needed
 
-6. Update release packaging in `.github/workflows/build.yml`
-- add `bearded-theme-ports-<target>.zip` if the target should have its own asset
+### 3. Create target package
 
-7. Update `README.md`
-- product description
-- output location
-- install instructions if practical
-- examples if practical
+- [ ] Add `internal/targets/<target>/`
+- [ ] Implement `Build(...) ([]string, error)`
 
-8. Add examples/install scripts only if the target has a real consumer workflow
+### 4. Reuse shared logic
+
+- [ ] Reuse existing color flattening if target needs alpha-safe colors
+- [ ] Reuse shared treesitter mapping if target is tree-sitter based
+- [ ] Reuse stable slug/name mapping when possible
+
+### 5. Wire CLI
+
+- [ ] Add target to `internal/app/app.go`
+- [ ] Set correct source type: `vscode` or `zed`
+- [ ] Support `go run . build <target>`
+
+### 6. Release packaging
+
+- [ ] Add `bearded-theme-ports-<target>.zip` in `.github/workflows/build.yml` if target should ship standalone
+
+### 7. README
+
+- [ ] Add in target overview
+- [ ] Add target section
+- [ ] Add install notes if target has real install flow
+- [ ] Add example config if useful
+
+### 8. Install support
+
+Only if target has real consumer workflow.
+
+- [ ] Add Unix shell script if practical
+- [ ] Add Windows PowerShell script if practical
+- [ ] Support latest-release install
+- [ ] Use user config dir, no admin path
+- [ ] Document one-liners in README
+- [ ] Add `--install` support in `internal/install/install.go` if local preview useful
+
+### 9. Verify
+
+- [ ] `go test ./...`
+- [ ] `go run . build <target>`
+- [ ] If install supported: verify `go run . build --install <target>` with temp config root when possible
 
 ## Mapping Guidance
 
-### VS Code based targets
+### VS Code based
 
-Use:
+- Use `colors` for global/editor/UI values
+- Use `tokenColors` for TextMate-style syntax rules
+- Ignore semantic tokens in phase 1 unless target clearly supports them
 
-- `colors` for UI/global values
-- `tokenColors` for syntax scope values
+### Zed based
 
-Ignore semantic tokens in phase 1 unless the target clearly supports them.
+- Use `style.syntax` for syntax classes
+- Use selected `style` keys for editor UI
+- Keep checked-in style overrides in `internal/targets/treesitter/overrides.go` in sync with preferred emphasis rules
 
-### Zed based targets
+## Color Rules
 
-Use:
+- Preserve plain hex when possible
+- Flatten 8-digit hex against relevant background if target does not safely support alpha
+- Prefer one shared color-mix implementation over many copies
 
-- `style.syntax` for syntax classes
-- selected `style` UI keys for editor UI values
+## Naming Rules
 
-Keep checked-in syntax style overrides from `internal/targets/treesitter/overrides.go` in sync when needed.
+- File names should use stable slug when possible
+- Zed-based targets should map names back to VS Code slugs for consistency
 
-## Color Handling
+## Install Script Rules
 
-- Preserve plain hex colors when possible.
-- Flatten 8-digit hex colors against a relevant background before writing targets that do not reliably support alpha.
-- Reuse existing color normalization/mixing logic when possible instead of introducing a second implementation.
+- Script should install from latest GitHub release asset
+- Script should create target dir if missing
+- Script should avoid mutating unrelated user config automatically
+- If manual config step needed, document example in README
 
-## Naming And Slugs
+## Commit Style
 
-- Keep file names based on the stable slug when possible.
-- If using Zed as source, match names back to VS Code theme slugs for consistency with existing outputs.
+Conventional style
 
-## Install Scripts
+## Branch / Release Assumptions
 
-If a target should have install scripts:
-
-- add Unix shell and Windows PowerShell variants
-- support installation from latest GitHub release assets
-- prefer non-admin install locations under the user's config directory
-- document no-checkout one-liners in `README.md`
-
-## Testing Expectations
-
-Minimum:
-
-- `go test ./...`
-- `go run . build <target>`
-
-If install support exists:
-
-- verify `go run . build --install <target>` using a temporary config root when possible
-
-## Commit Guidance
-
-Prefer commit messages like:
-
-- `feat: add <target> theme port`
-- `docs: add <target> install guide`
-- `ci: package <target> release assets`
-
-## Branch And Release Assumptions
-
-- default branch is `master`
-- pushes go directly to `master`
+- Default branch: `master`
+- Pushes go direct to `master`
 - GitHub Actions run on push to `master`
-- releases are created automatically per push
+- Releases created automatically per push
