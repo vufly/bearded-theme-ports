@@ -52,6 +52,10 @@ func WezTermOutputDir(root string) string {
 	return filepath.Join(root, "dist", "wezterm")
 }
 
+func ITerm2OutputDir(root string) string {
+	return filepath.Join(root, "dist", "iterm2")
+}
+
 func KittyOutputDir(root string) string {
 	return filepath.Join(root, "dist", "kitty")
 }

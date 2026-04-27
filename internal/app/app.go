@@ -16,6 +16,7 @@ import (
 	"bearded-theme-ports/internal/targets/firefoxcolor"
 	"bearded-theme-ports/internal/targets/ghostty"
 	"bearded-theme-ports/internal/targets/helix"
+	"bearded-theme-ports/internal/targets/iterm2"
 	"bearded-theme-ports/internal/targets/kitty"
 	"bearded-theme-ports/internal/targets/lazygit"
 	"bearded-theme-ports/internal/targets/neovim"
@@ -306,6 +307,12 @@ var targetsByName = map[string]targetDefinition{
 	"helix": {
 		source:  "zed",
 		builder: func(root string, inputs buildInputs) ([]string, error) { return helix.Build(root, inputs.ZedThemes) },
+	},
+	"iterm2": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return iterm2.Build(root, inputs.VSCodeThemes)
+		},
 	},
 	"neovim": {
 		source:  "zed",

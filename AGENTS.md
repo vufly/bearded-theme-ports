@@ -23,7 +23,7 @@ Use source closest to target model.
 
 - Path: `.cache/upstream/bearded-theme/dist/vscode/themes/*.json`
 - Use for: terminal targets, tmTheme-style targets, UI/token-color driven targets
-- Examples: `wezterm`, `tmtheme`, `bat`, `delta`, `kitty`, `alacritty`, `ghostty`, `zellij`, `termux`, `lazygit`, `opencode`, `codex`, `windows-terminal`, `firefox-color`
+- Examples: `wezterm`, `iterm2`, `tmtheme`, `bat`, `delta`, `kitty`, `alacritty`, `ghostty`, `zellij`, `termux`, `lazygit`, `opencode`, `codex`, `windows-terminal`, `firefox-color`
 
 ### Zed build output
 
@@ -150,6 +150,10 @@ Only if target has real consumer workflow.
 ## Commit Style
 
 Conventional style
+
+## Examples / Testing
+
+For examples and testing, use `bearded-theme-monokai-stone` as the theme name.
 
 ## Branch / Release Assumptions
 

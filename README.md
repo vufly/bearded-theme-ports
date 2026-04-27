@@ -43,6 +43,7 @@ go run . list targets
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
+| iTerm2 | Terminal | VS Code | `dist/iterm2/` | `bearded-theme-ports-iterm2.zip` | No |
 | Kitty | Terminal | VS Code | `dist/kitty/` | `bearded-theme-ports-kitty.zip` | Yes (sh) |
 | Alacritty | Terminal | VS Code | `dist/alacritty/` | `bearded-theme-ports-alacritty.zip` | Yes |
 | Ghostty | Terminal | VS Code | `dist/ghostty/` | `bearded-theme-ports-ghostty.zip` | Yes (sh) |
@@ -179,6 +180,21 @@ powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]:
 ```
 
 After installation, point WezTerm at the theme directory in your config (on Windows, adjust the path to your home directory if needed).
+
+</details>
+
+<details>
+<summary><strong>iTerm2</strong> — iTerm2 color presets</summary>
+
+Generates `.itermcolors` preset files for [iTerm2](https://iterm2.com/documentation-preferences-profiles-colors.html).
+
+Output location after build: `dist/iterm2/`.
+
+Release assets:
+
+- `bearded-theme-ports-iterm2.zip`
+
+To install manually: open iTerm2, go to Profiles > Colors > Color Presets..., choose Import..., select one `.itermcolors` file, then pick imported preset by name.
 
 </details>
 
