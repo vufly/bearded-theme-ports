@@ -2,7 +2,6 @@ package tmtheme
 
 import (
 	"bytes"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"strings"
 
 	"bearded-theme-ports/internal/colorutil"
+	"bearded-theme-ports/internal/jsonc"
 	"bearded-theme-ports/internal/model"
 	"bearded-theme-ports/internal/source"
 	"bearded-theme-ports/internal/strutil"
@@ -85,22 +85,9 @@ func LoadMirroredOverrides(root string) ([]model.TokenColorRule, error) {
 		} `json:"editor.tokenColorCustomizations"`
 	}
 
-	content, err := os.ReadFile(filepath.Join(root, "config", "vscode_highlight.json5"))
-	if err != nil {
-		return nil, err
-	}
-
-	clean := make([]string, 0, 64)
-	for _, line := range strings.Split(string(content), "\n") {
-		if index := strings.Index(line, "//"); index >= 0 {
-			line = line[:index]
-		}
-		clean = append(clean, line)
-	}
-
 	var file overrideFile
-	if err := json.Unmarshal([]byte(strings.Join(clean, "\n")), &file); err != nil {
-		return nil, fmt.Errorf("parse config/vscode_highlight.json5: %w", err)
+	if err := jsonc.UnmarshalFile(filepath.Join(root, "config", "vscode_highlight.jsonc"), &file); err != nil {
+		return nil, fmt.Errorf("parse config/vscode_highlight.jsonc: %w", err)
 	}
 
 	return file.EditorTokenColorCustomizations.TextMateRules, nil
@@ -321,4 +308,3 @@ func escapeXML(value string) string {
 	_ = xml.EscapeText(&buffer, []byte(value))
 	return buffer.String()
 }
-

@@ -152,7 +152,7 @@ func TestLoadMirroredOverrides(t *testing.T) {
 	if err := os.MkdirAll(configDir, 0o755); err != nil {
 		t.Fatalf("MkdirAll() error = %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(configDir, "vscode_highlight.json5"), []byte(`{
+	if err := os.WriteFile(filepath.Join(configDir, "vscode_highlight.jsonc"), []byte(`{
   "editor.tokenColorCustomizations": {
     "textMateRules": [
       {

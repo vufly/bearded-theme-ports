@@ -6,7 +6,7 @@ The goal is to keep a single source of truth for the theme and generate consiste
 
 Generated files in this repository are built from upstream artifacts, not hand-maintained theme definitions.
 
-The repository also mirrors local VS Code TextMate override rules in `config/vscode_highlight.json5`, and those overrides are applied to tmTheme-derived targets.
+The repository also mirrors local VS Code TextMate override rules in `config/vscode_highlight.jsonc`, and those overrides are applied to tmTheme-derived targets.
 
 ## 🚀 Quick Start
 
@@ -426,6 +426,8 @@ powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]:
 Generates JSON theme files for OpenCode.
 
 Reference: <https://opencode.ai/docs/themes/>.
+
+Custom dark/light combined themes may be listed in `config/opencode_combined_themes.jsonc` as `["custom-name", "dark-theme-slug", "light-theme-slug"]` tuples. Build writes combined `.json` themes with per-key `{ "dark": ..., "light": ... }` values.
 
 Example config: [`examples/opencode-tui.json`](examples/opencode-tui.json).
 
