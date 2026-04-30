@@ -18,19 +18,19 @@ func TestBuild_EmitsURLJSONAndIndexForEveryTheme(t *testing.T) {
 			Theme: model.VSCodeTheme{
 				Name: "Bearded Theme Monokai Stone",
 				Colors: map[string]string{
-					"editor.background":               "#1e1f29",
-					"editor.foreground":               "#a8afe6",
-					"tab.activeBackground":            "#16171f",
-					"tab.activeForeground":            "#fefefe",
-					"tab.activeBorderTop":             "#febc7c",
-					"input.background":                "#292b3c",
-					"input.foreground":                "#a8afe6",
-					"dropdown.background":             "#292b3c",
-					"dropdown.foreground":             "#a8afe6",
-					"sideBar.background":              "#191a24",
-					"sideBar.foreground":              "#a8afe6",
+					"editor.background":                "#1e1f29",
+					"editor.foreground":                "#a8afe6",
+					"tab.activeBackground":             "#16171f",
+					"tab.activeForeground":             "#fefefe",
+					"tab.activeBorderTop":              "#febc7c",
+					"input.background":                 "#292b3c",
+					"input.foreground":                 "#a8afe6",
+					"dropdown.background":              "#292b3c",
+					"dropdown.foreground":              "#a8afe6",
+					"sideBar.background":               "#191a24",
+					"sideBar.foreground":               "#a8afe6",
 					"editorGroupHeader.tabsBackground": "#191a24",
-					"titleBar.activeBackground":       "#16171f",
+					"titleBar.activeBackground":        "#16171f",
 				},
 			},
 		},
@@ -133,5 +133,57 @@ func TestBuildTheme_StripsAlphaFromKeysWithoutAlpha(t *testing.T) {
 		if !got.Colors[key].HasAlpha {
 			t.Fatalf("color %q should preserve alpha channel", key)
 		}
+	}
+}
+
+func TestBuild_UpdatesReadmeFirefoxColorLinksBlock(t *testing.T) {
+	root := t.TempDir()
+	readme := `# Test
+
+Before.
+
+<!-- BEGIN FIREFOX_COLOR_LINKS -->
+- [Old](https://example.com/old)
+<!-- END FIREFOX_COLOR_LINKS -->
+
+After.
+`
+	if err := os.WriteFile(filepath.Join(root, "README.md"), []byte(readme), 0o644); err != nil {
+		t.Fatalf("write README.md: %v", err)
+	}
+
+	_, err := Build(root, []model.ThemeFile{
+		{
+			Slug: "bearded-theme-arc",
+			Theme: model.VSCodeTheme{
+				Name: "Bearded Theme Arc",
+				Colors: map[string]string{
+					"editor.background": "#2f343f",
+					"editor.foreground": "#dadbde",
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Build() error = %v", err)
+	}
+
+	content, err := os.ReadFile(filepath.Join(root, "README.md"))
+	if err != nil {
+		t.Fatalf("read README.md: %v", err)
+	}
+
+	output := string(content)
+	if strings.Contains(output, "https://example.com/old") {
+		t.Fatalf("README.md still contains stale Firefox Color URL\n%s", output)
+	}
+	if !strings.Contains(output, "- [Bearded Theme Arc](https://color.firefox.com/?theme=") {
+		t.Fatalf("README.md missing regenerated Firefox Color link\n%s", output)
+	}
+	if !strings.Contains(output, "<!-- BEGIN FIREFOX_COLOR_LINKS -->\n- [Bearded Theme Arc]") {
+		t.Fatalf("README.md block not rewritten in expected place\n%s", output)
+	}
+	if !strings.Contains(output, "<!-- END FIREFOX_COLOR_LINKS -->") {
+		t.Fatalf("README.md end marker missing\n%s", output)
 	}
 }

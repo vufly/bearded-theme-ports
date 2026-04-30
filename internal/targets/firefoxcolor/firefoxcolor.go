@@ -3,9 +3,9 @@
 //
 //   - <slug>.url          one-line shareable URL (drop into the address bar)
 //   - <slug>.json         raw theme schema (the same {title,colors,images}
-//                         object the site round-trips through its URL)
+//     object the site round-trips through its URL)
 //   - index.html          a single page that lists every theme as a
-//                         click-to-open link (see "Quick input" in README)
+//     click-to-open link (see "Quick input" in README)
 package firefoxcolor
 
 import (
@@ -35,6 +35,11 @@ var colorsWithoutAlpha = map[string]bool{
 	"sidebar":             true,
 	"tab_background_text": true,
 }
+
+const (
+	readmeFirefoxColorLinksBegin = "<!-- BEGIN FIREFOX_COLOR_LINKS -->"
+	readmeFirefoxColorLinksEnd   = "<!-- END FIREFOX_COLOR_LINKS -->"
+)
 
 func Build(root string, themes []model.ThemeFile) ([]string, error) {
 	outputDir := source.FirefoxColorOutputDir(root)
@@ -87,7 +92,49 @@ func Build(root string, themes []model.ThemeFile) ([]string, error) {
 	}
 	paths = append(paths, indexPath)
 
+	if err := updateReadmeFirefoxColorLinks(root, entries); err != nil {
+		return nil, err
+	}
+
 	return paths, nil
+}
+
+func updateReadmeFirefoxColorLinks(root string, entries []indexEntry) error {
+	readmePath := filepath.Join(root, "README.md")
+	content, err := os.ReadFile(readmePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+
+	readme := string(content)
+	begin := strings.Index(readme, readmeFirefoxColorLinksBegin)
+	if begin < 0 {
+		return nil
+	}
+
+	end := strings.Index(readme, readmeFirefoxColorLinksEnd)
+	if end < 0 || end < begin {
+		return fmt.Errorf("README.md: firefox color links end marker missing or out of order")
+	}
+
+	block := renderReadmeFirefoxColorLinks(entries)
+	updated := readme[:begin+len(readmeFirefoxColorLinksBegin)] + "\n" + block + readme[end:]
+	if updated == readme {
+		return nil
+	}
+
+	return os.WriteFile(readmePath, []byte(updated), 0o644)
+}
+
+func renderReadmeFirefoxColorLinks(entries []indexEntry) string {
+	var builder strings.Builder
+	for _, entry := range entries {
+		fmt.Fprintf(&builder, "- [%s](%s)\n", entry.name, entry.url)
+	}
+	return builder.String()
 }
 
 // buildTheme picks the subset of VS Code UI colors that maps cleanly onto
@@ -128,8 +175,7 @@ func buildTheme(input model.ThemeFile) firefoxcolor.Theme {
 			"editor.background",
 		)),
 		"toolbar_text": parseColor(pickHex(foreground,
-			"tab.activeForeground",
-			"titleBar.activeForeground",
+			"foreground",
 			"editor.foreground",
 		)),
 		"frame": parseColor(pickHex(background,
@@ -138,7 +184,7 @@ func buildTheme(input model.ThemeFile) firefoxcolor.Theme {
 			"editor.background",
 		)),
 		"tab_background_text": parseColor(pickHex(foreground,
-			"tab.inactiveForeground",
+			"tab.activeForeground",
 			"editor.foreground",
 		)),
 		"toolbar_field": parseColor(pickHex(background,
