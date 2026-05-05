@@ -12,6 +12,7 @@ import (
 	"bearded-theme-ports/internal/output"
 	"bearded-theme-ports/internal/source"
 	"bearded-theme-ports/internal/targets/alacritty"
+	"bearded-theme-ports/internal/targets/claudecode"
 	"bearded-theme-ports/internal/targets/delta"
 	"bearded-theme-ports/internal/targets/firefoxcolor"
 	"bearded-theme-ports/internal/targets/ghostty"
@@ -322,6 +323,12 @@ var targetsByName = map[string]targetDefinition{
 		source: "vscode",
 		builder: func(root string, inputs buildInputs) ([]string, error) {
 			return opencode.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"claude-code": {
+		source: "vscode",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return claudecode.Build(root, inputs.VSCodeThemes)
 		},
 	},
 	"tmtheme": {

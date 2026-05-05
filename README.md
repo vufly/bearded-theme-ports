@@ -39,6 +39,7 @@ go run . list targets
 | Target | Category | Source of truth | Output | Release asset | Install scripts |
 | --- | --- | --- | --- | --- | --- |
 | Codex | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
+| Claude Code | CLI theme | VS Code | `dist/claude-code/` | `bearded-theme-ports-claude-code.zip` | Yes |
 | Helix | Editor | Zed | `dist/helix/` | `bearded-theme-ports-helix.zip` | Yes |
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
@@ -416,6 +417,53 @@ Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-codex.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-codex.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+</details>
+
+<details>
+<summary><strong>Claude Code</strong> — custom themes for Claude Code CLI</summary>
+
+Generates Claude Code custom theme JSON files.
+
+Reference: <https://code.claude.com/docs/en/terminal-config#color-token-reference>
+
+Each generated file uses `base` (`dark` or `light`) plus `overrides`. The `claude` brand color token is intentionally omitted so Claude Code keeps its built-in brand accent.
+
+Install scripts download latest `bearded-theme-ports-claude-code.zip` and install `.json` files into `~/.claude/themes/`.
+
+To install manually: copy `.json` files into `~/.claude/themes/`, then select them from `/theme` as custom themes.
+
+Local install from this repo:
+
+```bash
+go run . build --install claude-code
+```
+
+#### ⚡ Automatic install
+
+macOS/Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-claude-code.sh | sh
+```
+
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-claude-code.sh | sh
+```
+
+Windows, inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-claude-code.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-claude-code.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-claude-code.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-claude-code.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
 </details>

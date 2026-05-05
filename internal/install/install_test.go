@@ -66,7 +66,7 @@ func shellQuote(value string) string {
 
 func TestSupportedTarget_CoversInstallScriptTargets(t *testing.T) {
 	supported := []string{
-		"alacritty", "bat", "codex", "delta", "ghostty",
+		"alacritty", "bat", "claude-code", "codex", "delta", "ghostty",
 		"helix", "kitty", "neovim", "opencode", "termux",
 		"wezterm", "zellij",
 	}
@@ -86,12 +86,39 @@ func TestSupportedTarget_CoversInstallScriptTargets(t *testing.T) {
 	}
 }
 
+func TestInstall_ClaudeCode_CopiesThemesIntoClaudeDir(t *testing.T) {
+	root := t.TempDir()
+	home := t.TempDir()
+	distDir := filepath.Join(root, "dist", "claude-code")
+	if err := os.MkdirAll(distDir, 0o755); err != nil {
+		t.Fatalf("MkdirAll() dist error = %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(distDir, "bearded-theme-monokai-stone.json"), []byte("{}"), 0o644); err != nil {
+		t.Fatalf("WriteFile() dist error = %v", err)
+	}
+
+	t.Setenv("HOME", home)
+
+	targetDir, err := Install(root, "claude-code")
+	if err != nil {
+		t.Fatalf("Install(claude-code) error = %v", err)
+	}
+
+	wantDir := filepath.Join(home, ".claude", "themes")
+	if targetDir != wantDir {
+		t.Fatalf("Install(claude-code) targetDir = %q, want %q", targetDir, wantDir)
+	}
+	if _, err := os.Stat(filepath.Join(targetDir, "bearded-theme-monokai-stone.json")); err != nil {
+		t.Fatalf("installed theme missing: %v", err)
+	}
+}
+
 func TestInstall_SimpleTargets_CopyDirContentsIntoConfigSubdir(t *testing.T) {
 	cases := []struct {
-		target     string
-		distSub    string
-		fileName   string
-		configSub  string
+		target    string
+		distSub   string
+		fileName  string
+		configSub string
 	}{
 		{target: "alacritty", distSub: "alacritty", fileName: "bearded-theme-monokai-stone.toml", configSub: "alacritty/themes"},
 		{target: "ghostty", distSub: "ghostty", fileName: "bearded-theme-monokai-stone", configSub: "ghostty/themes"},

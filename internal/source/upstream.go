@@ -108,6 +108,10 @@ func OpenCodeOutputDir(root string) string {
 	return filepath.Join(root, "dist", "opencode")
 }
 
+func ClaudeCodeOutputDir(root string) string {
+	return filepath.Join(root, "dist", "claude-code")
+}
+
 func LegacyTargetTypesDir(root string) string {
 	return filepath.Join(root, "dist", "terminals")
 }

@@ -16,6 +16,7 @@ func SupportedTarget(target string) bool {
 	switch target {
 	case "alacritty",
 		"bat",
+		"claude-code",
 		"codex",
 		"delta",
 		"ghostty",
@@ -64,6 +65,9 @@ func Install(root string, target string) (string, error) {
 		postInstall = func() error {
 			return runBatCacheBuild(batBin)
 		}
+	case "claude-code":
+		sourceDir = source.ClaudeCodeOutputDir(root)
+		targetDir = claudeCodeThemesDir()
 	case "codex":
 		sourceDir = source.TMThemeOutputDir(root)
 		targetDir = codexThemesDir()
@@ -214,6 +218,15 @@ func opencodeThemesDir() string {
 	}
 
 	return filepath.Join(configRootDir(), "opencode", "themes")
+}
+
+func claudeCodeThemesDir() string {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return filepath.Join(".claude", "themes")
+	}
+
+	return filepath.Join(homeDir, ".claude", "themes")
 }
 
 func kittyThemesDir() string {
