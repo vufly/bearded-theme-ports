@@ -59,6 +59,22 @@ Build all targets:
 go run . build
 ```
 
+Build and install all means all build targets plus every supported installer:
+
+```bash
+go run . prepare-and-build --install
+go run . build --install bat codex
+```
+
+`bat` and `codex` are install-only consumers of `tmtheme` and require explicit
+selection. Targets without installers retain their generated output in `dist/`.
+
+For pnpm, upstream preparation resolves missing or placeholder `allowBuilds`
+decisions for `@vscode/vsce-sign` and `keytar` to `false` in the cached upstream
+project. Their install scripts are unnecessary for theme generation. Preserve
+explicit decisions and unrelated settings; resolve new dependency failures
+individually before retrying preparation.
+
 ## Add New Target Checklist
 
 ### 1. Choose source

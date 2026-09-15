@@ -28,6 +28,17 @@ Build and install locally:
 go run . build --install wezterm
 ```
 
+Build everything and run every supported local installer:
+
+```bash
+go run . prepare-and-build --install
+go run . build --install bat codex
+```
+
+`bat` and `codex` consume `tmtheme` output and need explicit install selection.
+Targets without automatic installers still generate files under `dist/<target>/`
+for manual setup.
+
 List supported targets:
 
 ```bash
@@ -876,3 +887,17 @@ Generated output lands under `dist/<target>/` (plus `dist/metadata/`); see the
 
 Upstream build package manager priority: `pnpm`, `bun`, `npm` — the tool uses
 the first one available on your machine.
+
+### pnpm dependency build scripts
+
+Before installing upstream dependencies with pnpm, preparation sets unresolved
+`allowBuilds` entries for `@vscode/vsce-sign` and `keytar` to `false` in the
+cached upstream project's configuration. These packages support extension
+packaging and publishing; their native install scripts are not needed to
+generate themes. Existing explicit decisions and other workspace settings are
+preserved.
+
+This handles `ERR_PNPM_IGNORED_BUILDS` for those two packages. Rerun
+`go run . prepare-upstream` after updating this tool. If the error names another
+dependency, inspect its build-script requirements and resolve its policy in
+`.cache/upstream/bearded-theme/pnpm-workspace.yaml` before retrying.

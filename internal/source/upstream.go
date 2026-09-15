@@ -143,6 +143,12 @@ func PrepareUpstream(root string) error {
 		return err
 	}
 
+	if packageManager == PackageManagerPNPM {
+		if err := preparePNPMBuildPolicy(UpstreamDir(root)); err != nil {
+			return err
+		}
+	}
+
 	if err := runCommandArgs(UpstreamDir(root), packageManager.InstallCommand(UpstreamDir(root))); err != nil {
 		return err
 	}
