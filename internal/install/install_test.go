@@ -3,11 +3,16 @@ package install
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
 
 func TestInstallBatCopiesThemesAndBuildsCache(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("uses a POSIX shell script as a fake bat executable")
+	}
+
 	root := t.TempDir()
 	sourceDir := filepath.Join(root, "dist", "tmtheme")
 	if err := os.MkdirAll(sourceDir, 0o755); err != nil {
@@ -98,6 +103,7 @@ func TestInstall_ClaudeCode_CopiesThemesIntoClaudeDir(t *testing.T) {
 	}
 
 	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
 
 	targetDir, err := Install(root, "claude-code")
 	if err != nil {
@@ -143,6 +149,8 @@ func TestInstall_SimpleTargets_CopyDirContentsIntoConfigSubdir(t *testing.T) {
 			// Force the installer to land under our temp HOME by clearing
 			// XDG_CONFIG_HOME and pointing HOME at the tempdir.
 			t.Setenv("HOME", home)
+			t.Setenv("USERPROFILE", home)
+			t.Setenv("APPDATA", "")
 			t.Setenv("XDG_CONFIG_HOME", "")
 
 			targetDir, err := Install(root, tc.target)
@@ -190,6 +198,7 @@ func TestInstall_Termux_ReplacesColorsPropertiesAndBacksUpExisting(t *testing.T)
 	}
 
 	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
 	// Empty PATH ensures termux-reload-settings is treated as absent —
 	// keeps the test hermetic on every host.
 	t.Setenv("PATH", "")
