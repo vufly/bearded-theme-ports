@@ -492,7 +492,7 @@ Example config: [`examples/opencode-tui.json`](examples/opencode-tui.json).
 
 Install scripts download latest `bearded-theme-ports-opencode.zip` and install `.json` files into OpenCode themes directory.
 
-To install manually: copy `.json` files into `~/.config/opencode/themes/` on macOS/Linux, or `%AppData%\\opencode\\themes\\` on Windows.
+To install manually: copy `.json` files into `~/.config/opencode/themes/` on macOS/Linux, or `%USERPROFILE%\.config\opencode\themes\` on Windows. Installers use `XDG_CONFIG_HOME` instead of `~/.config` when set.
 
 Local install from this repo:
 

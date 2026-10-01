@@ -211,12 +211,6 @@ func codexThemesDir() string {
 }
 
 func opencodeThemesDir() string {
-	if runtime.GOOS == "windows" {
-		if appData := os.Getenv("APPDATA"); appData != "" {
-			return filepath.Join(appData, "opencode", "themes")
-		}
-	}
-
 	return filepath.Join(configRootDir(), "opencode", "themes")
 }
 

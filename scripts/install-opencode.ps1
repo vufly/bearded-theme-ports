@@ -2,7 +2,8 @@ $ErrorActionPreference = "Stop"
 
 $Repo = "vufly/bearded-theme-ports"
 $AssetUrl = "https://github.com/$Repo/releases/latest/download/bearded-theme-ports-opencode.zip"
-$TargetDir = Join-Path $env:APPDATA "opencode/themes"
+$ConfigRoot = if ($env:XDG_CONFIG_HOME) { $env:XDG_CONFIG_HOME } else { Join-Path $HOME ".config" }
+$TargetDir = Join-Path $ConfigRoot "opencode/themes"
 $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("bearded-theme-ports-opencode-" + [System.Guid]::NewGuid().ToString("N"))
 $ArchivePath = Join-Path $TempDir "bearded-theme-ports-opencode.zip"
 $ExtractDir = Join-Path $TempDir "extract"
