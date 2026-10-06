@@ -63,11 +63,21 @@ Build and install all means all build targets plus every supported installer:
 
 ```bash
 go run . prepare-and-build --install
-go run . build --install bat codex
+go run . build --install
 ```
 
-`bat` and `codex` are install-only consumers of `tmtheme` and require explicit
-selection. Targets without installers retain their generated output in `dist/`.
+These commands are alternatives: use `build` when upstream artifacts are already
+prepared. With no target arguments, `--install` must select every supported local
+installer, including install-only consumers such as `bat` and `codex`. Both consume
+`tmtheme` output, which must be built only once. Explicit target arguments limit
+the build and install selection to those targets and their build dependencies.
+Targets without installers retain their generated output in `dist/`.
+The `bat` installer requires `bat` or `batcat` on `PATH` and rebuilds its cache.
+
+Keep the complete installer list in `internal/install/install.go` and use it for
+default install selection; do not derive installer coverage only from build
+targets. Preserve regression coverage against the install scripts so new
+install-only consumers cannot be silently omitted.
 
 For pnpm, upstream preparation resolves missing or placeholder `allowBuilds`
 decisions for `@vscode/vsce-sign` and `keytar` to `false` in the cached upstream
@@ -113,6 +123,8 @@ individually before retrying preparation.
 - [ ] Add target section
 - [ ] Add install notes if target has real install flow
 - [ ] Add example config if useful
+- [ ] Compare the complete CLI target and installer lists with the README overview and target sections; document install-only consumers too
+- [ ] Only describe a target as supported when its builder or shared-output consumer, packaging, and documented setup exist
 
 ### 8. Install support
 
@@ -124,12 +136,14 @@ Only if target has real consumer workflow.
 - [ ] Use user config dir, no admin path
 - [ ] Document one-liners in README
 - [ ] Add `--install` support in `internal/install/install.go` if local preview useful
+- [ ] Include every supported installer in no-target `--install` selection, including consumers of another target's output
 
 ### 9. Verify
 
 - [ ] `go test ./...`
 - [ ] `go run . build <target>`
 - [ ] If install supported: verify `go run . build --install <target>` with temp config root when possible
+- [ ] Verify default `--install` coverage and explicit target selection; use temporary home/config/cache directories for install checks
 
 ## Mapping Guidance
 

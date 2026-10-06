@@ -7,34 +7,27 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 
 	"bearded-theme-ports/internal/source"
 )
 
-func SupportedTarget(target string) bool {
-	switch target {
-	case "alacritty",
-		"bat",
-		"claude-code",
-		"codex",
-		"delta",
-		"ghostty",
-		"helix",
-		"kitty",
-		"neovim",
-		"opencode",
-		"termux",
-		"wezterm",
-		"zellij":
-		return true
+// SupportedTargets includes build targets and install-only consumers, sorted by name.
+func SupportedTargets() []string {
+	return []string{
+		"alacritty", "bat", "claude-code", "codex", "delta", "ghostty",
+		"helix", "kitty", "neovim", "opencode", "termux", "wezterm", "zellij",
 	}
+}
+
+func SupportedTarget(target string) bool {
 	// Intentionally not installable:
 	//   - firefox-color: URL-based (no filesystem destination)
 	//   - windows-terminal: requires merging schemes into settings.json
 	//   - lazygit: requires merging YAML under gui.theme in config.yml
-	//   - tmtheme: consumed by the bat install path
-	return false
+	//   - tmtheme: consumed by the bat and codex install paths
+	return slices.Contains(SupportedTargets(), target)
 }
 
 func Install(root string, target string) (string, error) {

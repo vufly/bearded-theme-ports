@@ -241,11 +241,7 @@ func parseTargets(args []string, installRequested bool) ([]string, []string, err
 		targets := allTargets()
 		installTargets := make([]string, 0, len(targets))
 		if installRequested {
-			for _, target := range targets {
-				if install.SupportedTarget(target) {
-					installTargets = append(installTargets, target)
-				}
-			}
+			installTargets = install.SupportedTargets()
 		}
 		return targets, installTargets, nil
 	}
@@ -474,7 +470,12 @@ const usageText = `Usage:
   bearded-theme-ports build [--install] [targets...]
   bearded-theme-ports list themes
   bearded-theme-ports list targets
-  bearded-theme-ports doctor`
+  bearded-theme-ports doctor
+
+With no targets, build commands generate every target. --install also runs every
+supported local installer, including bat and codex (consumers of tmtheme output).
+With explicit targets, only selected targets are built and installed.
+bat installation requires bat or batcat on PATH.`
 
 func printUsage() {
 	fmt.Println(usageText)

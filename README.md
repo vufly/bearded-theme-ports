@@ -32,10 +32,13 @@ Build everything and run every supported local installer:
 
 ```bash
 go run . prepare-and-build --install
-go run . build --install bat codex
 ```
 
-`bat` and `codex` consume `tmtheme` output and need explicit install selection.
+With no target arguments, `--install` runs every supported local installer,
+including `bat` and `codex`, which consume `tmtheme` output. Use
+`go run . build --install` when upstream artifacts are already prepared.
+With explicit target arguments, only selected targets are built and installed.
+The `bat` installer requires `bat` or `batcat` on `PATH` and rebuilds its cache.
 Targets without automatic installers still generate files under `dist/<target>/`
 for manual setup.
 
@@ -67,6 +70,9 @@ go run . list targets
 | Delta | Git diff pager | VS Code | `dist/delta/` | `bearded-theme-ports-delta.zip` | Yes |
 | tmTheme | Theme format | VS Code | `dist/tmtheme/` | `bearded-theme-ports-tmtheme.zip` | No |
 | bat | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
+
+Rio terminal is not currently supported: this repository has no Rio builder,
+release asset, or installer.
 
 ## 📦 Targets
 
@@ -868,8 +874,10 @@ may be combined in one command):
 
 ```bash
 go run . prepare-and-build              # build everything
+go run . prepare-and-build --install    # build everything and run every supported installer
 go run . prepare-and-build <target>...  # build one or more targets
 go run . build <target>...              # rebuild from already-prepared upstream artifacts
+go run . build --install                # rebuild everything and run every supported installer
 go run . build --install <target>...    # build and install locally
 go run . list targets                   # list supported targets
 ```
