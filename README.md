@@ -57,6 +57,7 @@ go run . list targets
 | Helix | Editor | Zed | `dist/helix/` | `bearded-theme-ports-helix.zip` | Yes |
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
+| Pi | CLI theme | VS Code | `dist/pi/` | `bearded-theme-ports-pi.zip` | Yes |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
 | iTerm2 | Terminal | VS Code | `dist/iterm2/` | `bearded-theme-ports-iterm2.zip` | No |
 | Kitty | Terminal | VS Code | `dist/kitty/` | `bearded-theme-ports-kitty.zip` | Yes (sh) |
@@ -530,6 +531,72 @@ Windows, from `cmd.exe`:
 
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-opencode.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-opencode.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+</details>
+
+<details>
+<summary><strong>Pi</strong> — themes for Pi coding agent</summary>
+
+Generates JSON theme files for [Pi](https://pi.dev/docs/latest/themes).
+
+Reference: <https://pi.dev/docs/latest/themes> and [theme schema](https://pi.dev/schemas/theme.schema.json).
+
+Each generated theme defines semantic UI tokens, syntax highlighting, markdown styles, diff colors, and thinking-level border states. The `appearance` property is explicitly set to `"dark"` or `"light"` so Pi can match your terminal appearance.
+
+To use a theme in Pi:
+- Use `/settings` > **Theme** and select the theme name (e.g. `bearded-theme-monokai-stone`).
+- Or configure `<agent-dir>/settings.json`:
+  ```json
+  {
+    "theme": "bearded-theme-monokai-stone"
+  }
+  ```
+- For automatic light/dark switching, specify light and dark themes separated by a slash:
+  ```json
+  {
+    "theme": "bearded-theme-solarized-light/bearded-theme-monokai-stone"
+  }
+  ```
+- Or pass via CLI:
+  ```bash
+  pi --use-theme bearded-theme-monokai-stone
+  ```
+
+Install scripts download the latest `bearded-theme-ports-pi.zip` and install `.json` files into Pi's user themes directory (`~/.pi/agent/themes/`, or `$PI_CODING_AGENT_DIR/themes/` if set).
+
+To install manually: copy `.json` files into `~/.pi/agent/themes/` (or `%USERPROFILE%\.pi\agent\themes\` on Windows).
+
+Local install from this repo:
+
+```bash
+go run . build --install pi
+```
+
+#### ⚡ Automatic install
+
+macOS/Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi.sh | sh
+```
+
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi.sh | sh
+```
+
+Windows, inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-pi.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-pi.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
 
 </details>

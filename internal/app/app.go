@@ -22,6 +22,7 @@ import (
 	"bearded-theme-ports/internal/targets/lazygit"
 	"bearded-theme-ports/internal/targets/neovim"
 	"bearded-theme-ports/internal/targets/opencode"
+	"bearded-theme-ports/internal/targets/pi"
 	"bearded-theme-ports/internal/targets/termux"
 	"bearded-theme-ports/internal/targets/tmtheme"
 	"bearded-theme-ports/internal/targets/wezterm"
@@ -191,6 +192,9 @@ func loadInputs(root string, targets []string) (buildInputs, []string, error) {
 			needsVSCode = true
 		case "zed":
 			needsZed = true
+		case "both":
+			needsVSCode = true
+			needsZed = true
 		}
 	}
 
@@ -325,6 +329,12 @@ var targetsByName = map[string]targetDefinition{
 		source: "vscode",
 		builder: func(root string, inputs buildInputs) ([]string, error) {
 			return claudecode.Build(root, inputs.VSCodeThemes)
+		},
+	},
+	"pi": {
+		source: "both",
+		builder: func(root string, inputs buildInputs) ([]string, error) {
+			return pi.Build(root, inputs.VSCodeThemes, inputs.ZedThemes)
 		},
 	},
 	"tmtheme": {

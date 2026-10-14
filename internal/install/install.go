@@ -17,7 +17,7 @@ import (
 func SupportedTargets() []string {
 	return []string{
 		"alacritty", "bat", "claude-code", "codex", "delta", "ghostty",
-		"helix", "kitty", "neovim", "opencode", "termux", "wezterm", "zellij",
+		"helix", "kitty", "neovim", "opencode", "pi", "termux", "wezterm", "zellij",
 	}
 }
 
@@ -79,6 +79,9 @@ func Install(root string, target string) (string, error) {
 	case "opencode":
 		sourceDir = source.OpenCodeOutputDir(root)
 		targetDir = opencodeThemesDir()
+	case "pi":
+		sourceDir = source.PiOutputDir(root)
+		targetDir = piThemesDir()
 	case "wezterm":
 		sourceDir = source.WezTermOutputDir(root)
 		targetDir = weztermThemesDir()
@@ -214,6 +217,19 @@ func claudeCodeThemesDir() string {
 	}
 
 	return filepath.Join(homeDir, ".claude", "themes")
+}
+
+func piThemesDir() string {
+	if agentDir := strings.TrimSpace(os.Getenv("PI_CODING_AGENT_DIR")); agentDir != "" {
+		return filepath.Join(agentDir, "themes")
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return filepath.Join(".pi", "agent", "themes")
+	}
+
+	return filepath.Join(homeDir, ".pi", "agent", "themes")
 }
 
 func kittyThemesDir() string {

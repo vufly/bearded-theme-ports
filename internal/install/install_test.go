@@ -72,7 +72,7 @@ func shellQuote(value string) string {
 func TestSupportedTarget_CoversInstallScriptTargets(t *testing.T) {
 	supported := []string{
 		"alacritty", "bat", "claude-code", "codex", "delta", "ghostty",
-		"helix", "kitty", "neovim", "opencode", "termux",
+		"helix", "kitty", "neovim", "opencode", "pi", "termux",
 		"wezterm", "zellij",
 	}
 	for _, target := range supported {
@@ -116,6 +116,50 @@ func TestInstall_ClaudeCode_CopiesThemesIntoClaudeDir(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(targetDir, "bearded-theme-monokai-stone.json")); err != nil {
 		t.Fatalf("installed theme missing: %v", err)
+	}
+}
+
+func TestInstall_Pi_CopiesThemesIntoPiAgentDir(t *testing.T) {
+	root := t.TempDir()
+	home := t.TempDir()
+	distDir := filepath.Join(root, "dist", "pi")
+	if err := os.MkdirAll(distDir, 0o755); err != nil {
+		t.Fatalf("MkdirAll() dist error = %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(distDir, "bearded-theme-monokai-stone.json"), []byte("{}"), 0o644); err != nil {
+		t.Fatalf("WriteFile() dist error = %v", err)
+	}
+
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+	t.Setenv("PI_CODING_AGENT_DIR", "")
+
+	targetDir, err := Install(root, "pi")
+	if err != nil {
+		t.Fatalf("Install(pi) error = %v", err)
+	}
+
+	wantDir := filepath.Join(home, ".pi", "agent", "themes")
+	if targetDir != wantDir {
+		t.Fatalf("Install(pi) targetDir = %q, want %q", targetDir, wantDir)
+	}
+	if _, err := os.Stat(filepath.Join(targetDir, "bearded-theme-monokai-stone.json")); err != nil {
+		t.Fatalf("installed theme missing: %v", err)
+	}
+
+	// Test PI_CODING_AGENT_DIR override
+	customAgentDir := filepath.Join(home, "custom-agent")
+	t.Setenv("PI_CODING_AGENT_DIR", customAgentDir)
+	targetDir, err = Install(root, "pi")
+	if err != nil {
+		t.Fatalf("Install(pi) with custom PI_CODING_AGENT_DIR error = %v", err)
+	}
+	wantCustomDir := filepath.Join(customAgentDir, "themes")
+	if targetDir != wantCustomDir {
+		t.Fatalf("Install(pi) custom targetDir = %q, want %q", targetDir, wantCustomDir)
+	}
+	if _, err := os.Stat(filepath.Join(targetDir, "bearded-theme-monokai-stone.json")); err != nil {
+		t.Fatalf("installed theme in custom dir missing: %v", err)
 	}
 }
 

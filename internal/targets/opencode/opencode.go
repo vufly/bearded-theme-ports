@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"bearded-theme-ports/internal/colorutil"
 	"bearded-theme-ports/internal/jsonc"
 	"bearded-theme-ports/internal/model"
+	"bearded-theme-ports/internal/palette"
 	"bearded-theme-ports/internal/source"
 	"bearded-theme-ports/internal/strutil"
 )
@@ -275,46 +275,6 @@ func loadCombinedThemes(root string) ([]combinedThemeSpec, error) {
 }
 
 func tokenForeground(theme model.VSCodeTheme, background string, patterns ...string) string {
-	bestScore := 0
-	bestColor := ""
-
-	for _, rule := range theme.TokenColors {
-		if rule.Settings.Foreground == "" || len(rule.Scope) == 0 {
-			continue
-		}
-
-		score := scopeMatchScore(rule.Scope, patterns...)
-		if score == 0 || score <= bestScore {
-			continue
-		}
-
-		bestScore = score
-		bestColor = colorutil.Flatten(rule.Settings.Foreground, background)
-	}
-
-	return bestColor
+	return palette.TokenForeground(theme, background, patterns...)
 }
 
-func scopeMatchScore(scopes model.ScopeList, patterns ...string) int {
-	bestScore := 0
-
-	for _, scope := range scopes {
-		for _, selector := range strings.Split(scope, ",") {
-			selector = strings.TrimSpace(selector)
-			for _, pattern := range patterns {
-				if selector == pattern {
-					if bestScore < 2 {
-						bestScore = 2
-					}
-					continue
-				}
-
-				if strings.Contains(selector, pattern) && bestScore < 1 {
-					bestScore = 1
-				}
-			}
-		}
-	}
-
-	return bestScore
-}

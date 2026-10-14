@@ -112,6 +112,10 @@ func ClaudeCodeOutputDir(root string) string {
 	return filepath.Join(root, "dist", "claude-code")
 }
 
+func PiOutputDir(root string) string {
+	return filepath.Join(root, "dist", "pi")
+}
+
 func LegacyTargetTypesDir(root string) string {
 	return filepath.Join(root, "dist", "terminals")
 }

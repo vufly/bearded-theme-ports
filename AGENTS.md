@@ -23,7 +23,7 @@ Use source closest to target model.
 
 - Path: `.cache/upstream/bearded-theme/dist/vscode/themes/*.json`
 - Use for: terminal targets, tmTheme-style targets, UI/token-color driven targets
-- Examples: `wezterm`, `iterm2`, `tmtheme`, `bat`, `delta`, `kitty`, `alacritty`, `ghostty`, `zellij`, `termux`, `lazygit`, `opencode`, `codex`, `windows-terminal`, `firefox-color`
+- Examples: `wezterm`, `iterm2`, `tmtheme`, `bat`, `delta`, `kitty`, `alacritty`, `ghostty`, `zellij`, `termux`, `lazygit`, `opencode`, `claude-code`, `codex`, `pi`, `windows-terminal`, `firefox-color`
 
 ### Zed build output
 
