@@ -17,7 +17,7 @@ import (
 func SupportedTargets() []string {
 	return []string{
 		"alacritty", "bat", "claude-code", "codex", "delta", "ghostty",
-		"helix", "kitty", "neovim", "opencode", "pi", "termux", "wezterm", "zellij",
+		"helix", "kitty", "neovim", "opencode", "pi", "pi-pigment", "termux", "wezterm", "zellij",
 	}
 }
 
@@ -26,7 +26,7 @@ func SupportedTarget(target string) bool {
 	//   - firefox-color: URL-based (no filesystem destination)
 	//   - windows-terminal: requires merging schemes into settings.json
 	//   - lazygit: requires merging YAML under gui.theme in config.yml
-	//   - tmtheme: consumed by the bat and codex install paths
+	//   - tmtheme: consumed by the bat, codex, and pi-pigment install paths
 	return slices.Contains(SupportedTargets(), target)
 }
 
@@ -82,6 +82,9 @@ func Install(root string, target string) (string, error) {
 	case "pi":
 		sourceDir = source.PiOutputDir(root)
 		targetDir = piThemesDir()
+	case "pi-pigment":
+		sourceDir = source.TMThemeOutputDir(root)
+		targetDir = filepath.Join(piAgentDir(), "extensions", "pigment", "themes")
 	case "wezterm":
 		sourceDir = source.WezTermOutputDir(root)
 		targetDir = weztermThemesDir()
@@ -220,16 +223,20 @@ func claudeCodeThemesDir() string {
 }
 
 func piThemesDir() string {
+	return filepath.Join(piAgentDir(), "themes")
+}
+
+func piAgentDir() string {
 	if agentDir := strings.TrimSpace(os.Getenv("PI_CODING_AGENT_DIR")); agentDir != "" {
-		return filepath.Join(agentDir, "themes")
+		return agentDir
 	}
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return filepath.Join(".pi", "agent", "themes")
+		return filepath.Join(".pi", "agent")
 	}
 
-	return filepath.Join(homeDir, ".pi", "agent", "themes")
+	return filepath.Join(homeDir, ".pi", "agent")
 }
 
 func kittyThemesDir() string {

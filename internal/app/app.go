@@ -255,10 +255,9 @@ func parseTargets(args []string, installRequested bool) ([]string, []string, err
 	targets := make([]string, 0, len(args))
 	installTargets := make([]string, 0, len(args))
 	for _, target := range args {
-		// bat and codex do not produce their own dist/ output; they both
-		// consume dist/tmtheme/. Installing either of them implicitly builds
-		// the tmtheme target as its source of files.
-		if installRequested && (target == "bat" || target == "codex") {
+		// Install-only consumers share dist/tmtheme/. Build it once even
+		// when multiple consumers are selected.
+		if installRequested && (target == "bat" || target == "codex" || target == "pi-pigment") {
 			if !seen["tmtheme"] {
 				seen["tmtheme"] = true
 				targets = append(targets, "tmtheme")
@@ -276,6 +275,8 @@ func parseTargets(args []string, installRequested bool) ([]string, []string, err
 				return nil, nil, fmt.Errorf("unsupported build target %q (use --install bat to install the tmtheme output into bat)", target)
 			case "codex":
 				return nil, nil, fmt.Errorf("unsupported build target %q (use --install codex to install the tmtheme output into codex)", target)
+			case "pi-pigment":
+				return nil, nil, fmt.Errorf("unsupported build target %q (use --install pi-pigment to install the tmtheme output into Pigment)", target)
 			}
 			return nil, nil, fmt.Errorf("unsupported build target %q", target)
 		}
@@ -483,7 +484,7 @@ const usageText = `Usage:
   bearded-theme-ports doctor
 
 With no targets, build commands generate every target. --install also runs every
-supported local installer, including bat and codex (consumers of tmtheme output).
+supported local installer, including bat, codex, and pi-pigment (tmtheme consumers).
 With explicit targets, only selected targets are built and installed.
 bat installation requires bat or batcat on PATH.`
 

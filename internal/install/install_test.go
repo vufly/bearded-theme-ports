@@ -72,7 +72,7 @@ func shellQuote(value string) string {
 func TestSupportedTarget_CoversInstallScriptTargets(t *testing.T) {
 	supported := []string{
 		"alacritty", "bat", "claude-code", "codex", "delta", "ghostty",
-		"helix", "kitty", "neovim", "opencode", "pi", "termux",
+		"helix", "kitty", "neovim", "opencode", "pi", "pi-pigment", "termux",
 		"wezterm", "zellij",
 	}
 	for _, target := range supported {

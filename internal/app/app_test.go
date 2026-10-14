@@ -21,8 +21,8 @@ func TestParseBuildOptionsDefaultInstallCoversInstallerScripts(t *testing.T) {
 			scriptTargets[strings.TrimSuffix(strings.TrimPrefix(name, "install-"), ext)] = true
 		}
 	}
-	if !scriptTargets["bat"] || !scriptTargets["codex"] {
-		t.Fatal("expected install-only consumer scripts for bat and codex")
+	if !scriptTargets["bat"] || !scriptTargets["codex"] || !scriptTargets["pi-pigment"] {
+		t.Fatal("expected install-only consumer scripts for bat, codex, and pi-pigment")
 	}
 
 	for _, flag := range []string{"--install", "-i"} {
@@ -57,14 +57,14 @@ func TestParseBuildOptionsDefaultBuildDoesNotInstall(t *testing.T) {
 }
 
 func TestParseBuildOptionsExplicitInstallDeduplicatesSharedBuild(t *testing.T) {
-	options, err := parseBuildOptions([]string{"--install", "bat", "codex", "tmtheme", "bat", "wezterm"})
+	options, err := parseBuildOptions([]string{"--install", "bat", "codex", "pi-pigment", "tmtheme", "bat", "pi-pigment", "wezterm"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !slices.Equal(options.targets, []string{"tmtheme", "wezterm"}) {
 		t.Fatalf("build targets = %v, want tmtheme and wezterm once each", options.targets)
 	}
-	if !slices.Equal(options.installTargets, []string{"bat", "codex", "wezterm"}) {
+	if !slices.Equal(options.installTargets, []string{"bat", "codex", "pi-pigment", "wezterm"}) {
 		t.Fatalf("install targets = %v, want only selected consumers and wezterm", options.installTargets)
 	}
 }

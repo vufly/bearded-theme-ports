@@ -35,7 +35,7 @@ go run . prepare-and-build --install
 ```
 
 With no target arguments, `--install` runs every supported local installer,
-including `bat` and `codex`, which consume `tmtheme` output. Use
+including `bat`, `codex`, and `pi-pigment`, which consume `tmtheme` output. Use
 `go run . build --install` when upstream artifacts are already prepared.
 With explicit target arguments, only selected targets are built and installed.
 The `bat` installer requires `bat` or `batcat` on `PATH` and rebuilds its cache.
@@ -58,6 +58,7 @@ go run . list targets
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
 | Pi | CLI theme | VS Code + Zed | `dist/pi/` | `bearded-theme-ports-pi.zip` | Yes |
+| pi-pigment | Consumer of `tmTheme` output | VS Code via `tmTheme` | Uses `dist/tmtheme/` output | `bearded-theme-ports-tmtheme.zip` | Yes |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
 | iTerm2 | Terminal | VS Code | `dist/iterm2/` | `bearded-theme-ports-iterm2.zip` | No |
 | Kitty | Terminal | VS Code | `dist/kitty/` | `bearded-theme-ports-kitty.zip` | Yes (sh) |
@@ -610,6 +611,70 @@ Windows, from `cmd.exe`:
 ```cmd
 powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-pi.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
 ```
+
+</details>
+
+<details>
+<summary><strong>pi-pigment</strong> — TextMate themes for Pigment in Pi</summary>
+
+[pi-pigment](https://pi.dev/packages/pi-pigment) imports the existing `.tmTheme` output; it has no separate builder or release asset. Install the extension first:
+
+```bash
+pi install npm:pi-pigment
+```
+
+Restart Pi after installing the extension. Reference: [Pigment configuration and custom theme files](https://cdn.jsdelivr.net/npm/pi-pigment@0.4.2/docs/config.md).
+
+Install scripts download the latest `bearded-theme-ports-tmtheme.zip` and copy its themes into:
+
+- macOS/Linux: `~/.pi/agent/extensions/pigment/themes/`
+- Windows: `%USERPROFILE%\.pi\agent\extensions\pigment\themes\`
+- With `PI_CODING_AGENT_DIR` set: `<agent-dir>/extensions/pigment/themes/`
+
+This is Pigment's source theme directory, **not** Pi's `~/.pi/agent/themes/` directory or Windows `%APPDATA%`. For project-only manual setup, copy themes into `.pi/extensions/pigment/themes/`; same-named project sources shadow global ones. Preserve the case-sensitive `.tmTheme` extension.
+
+Local install from this repo (builds `tmtheme` once):
+
+```bash
+go run . build --install pi-pigment
+```
+
+#### ⚡ Automatic install
+
+macOS/Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi-pigment.sh | sh
+```
+
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi-pigment.sh | sh
+```
+
+Windows, inside PowerShell or `pwsh`:
+
+```powershell
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "install-pi-pigment.ps1"; Invoke-WebRequest https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi-pigment.ps1 -OutFile $tmp; & $tmp; Remove-Item $tmp
+```
+
+Windows, from `cmd.exe`:
+
+```cmd
+powershell -ExecutionPolicy Bypass -Command "$tmp = Join-Path ([System.IO.Path]::GetTempPath()) 'install-pi-pigment.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/vufly/bearded-theme-ports/master/scripts/install-pi-pigment.ps1' -OutFile $tmp; & $tmp; Remove-Item $tmp"
+```
+
+Installers copy sources only; they do not change Pigment configuration, convert themes, or select a theme. In Pi, run:
+
+```text
+/pigment convert bearded-theme-monokai-stone
+/reload
+```
+
+Then select `pigment-bearded-theme-monokai-stone` in `/settings` > **Theme**. Conversion writes `pigment-<slug>.json` beside the source; keep the source for full TextMate token precision. Use `/pigment convert` without a name to choose another installed variant.
+
+To retain the repo's native Pi UI theme while using TextMate syntax colors in Pigment, set `"syntaxTheme": "bearded-theme-monokai-stone"` in `<agent-dir>/extensions/pigment/config.jsonc` (conversion is not required).
 
 </details>
 
