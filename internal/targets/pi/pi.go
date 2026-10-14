@@ -36,24 +36,14 @@ func Build(root string, themes []model.ThemeFile, zedThemes []model.ZedThemeFile
 		return nil, err
 	}
 
-	zedInfo := make(map[string]string, len(zedThemes))
-	zedAccent := make(map[string]string, len(zedThemes))
-	zedMuted := make(map[string]string, len(zedThemes))
+	zedStyles := make(map[string]map[string]string, len(zedThemes))
 	for _, zt := range zedThemes {
-		if val := zt.Theme.Style.Values["info"]; val != "" {
-			zedInfo[zt.Slug] = val
-		}
-		if val := zt.Theme.Style.Values["text.accent"]; val != "" {
-			zedAccent[zt.Slug] = val
-		}
-		if val := zt.Theme.Style.Values["text.muted"]; val != "" {
-			zedMuted[zt.Slug] = val
-		}
+		zedStyles[zt.Slug] = zt.Theme.Style.Values
 	}
 
 	paths := make([]string, 0, len(themes))
 	for _, theme := range themes {
-		content, err := render(theme, zedInfo[theme.Slug], zedAccent[theme.Slug], zedMuted[theme.Slug])
+		content, err := render(theme, zedStyles[theme.Slug])
 		if err != nil {
 			return nil, fmt.Errorf("render %s: %w", theme.Slug, err)
 		}
@@ -69,7 +59,7 @@ func Build(root string, themes []model.ThemeFile, zedThemes []model.ZedThemeFile
 	return paths, nil
 }
 
-func render(input model.ThemeFile, zedInfo, zedAccent, zedMuted string) ([]byte, error) {
+func render(input model.ThemeFile, zedStyle map[string]string) ([]byte, error) {
 	appearance := "dark"
 	defaultBg := "#000000"
 	defaultFg := "#ffffff"
@@ -104,9 +94,9 @@ func render(input model.ThemeFile, zedInfo, zedAccent, zedMuted string) ([]byte,
 		getColor("", "descriptionForeground", "editorLineNumber.foreground", "disabledForeground"),
 		text,
 	)
-	muted := strutil.FirstNonEmpty(colorutil.Flatten(zedMuted, background), textMuted)
+	muted := strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["text.muted"], background), textMuted)
 	dim := strutil.FirstNonEmpty(
-		colorutil.Flatten(zedInfo, background),
+		colorutil.Flatten(zedStyle["info"], background),
 		getColor("", "editorWhitespace.foreground", "editorIndentGuide.background1", "disabledForeground"),
 		colorutil.Flatten(textMuted+"99", background),
 	)
@@ -121,7 +111,7 @@ func render(input model.ThemeFile, zedInfo, zedAccent, zedMuted string) ([]byte,
 	)
 
 	accent := strutil.FirstNonEmpty(
-		colorutil.Flatten(zedAccent, background),
+		colorutil.Flatten(zedStyle["text.accent"], background),
 		getColor("", "editorCursor.foreground", "focusBorder", "activityBarBadge.background", "terminal.ansiCyan", "charts.blue"),
 		text,
 	)
@@ -184,7 +174,7 @@ func render(input model.ThemeFile, zedInfo, zedAccent, zedMuted string) ([]byte,
 	syntaxOperator := strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "keyword.operator", "operator"), getColor(text, "terminal.ansiBlue"), blue)
 	syntaxPunctuation := strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "punctuation"), text)
 
-	userMessageBg := strutil.FirstNonEmpty(getColor("", "sideBar.background", "panel.background", "editorWidget.background"), background)
+	userMessageBg := strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["hint.background"], background), getColor("", "sideBar.background", "panel.background", "editorWidget.background"), background)
 	selectedBg := strutil.FirstNonEmpty(getColor("", "list.activeSelectionBackground", "editor.selectionBackground", "selection.background"), colorutil.Flatten(accent+"33", background))
 
 	cardBg := strutil.FirstNonEmpty(getColor("", "sideBar.background", "editorWidget.background"), background)
@@ -213,12 +203,12 @@ func render(input model.ThemeFile, zedInfo, zedAccent, zedMuted string) ([]byte,
 			"searchMatchText":    strutil.FirstNonEmpty(getColor("", "editor.findMatchForeground", "editor.findMatchHighlightForeground"), text),
 			"userMessageBg":      userMessageBg,
 			"userMessageText":    text,
-			"customMessageBg":    colorutil.Flatten(strutil.FirstNonEmpty(purple+"26", accent+"26"), background),
+			"customMessageBg":    strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["info.background"], background), colorutil.Flatten(purple+"26", background)),
 			"customMessageText":  textMuted,
 			"customMessageLabel": accent,
-			"toolPendingBg":      strutil.FirstNonEmpty(getColor("", "editorWidget.background", "input.background"), colorutil.Flatten(textMuted+"1f", background)),
-			"toolSuccessBg":      colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.insertedLineBackground"], success+"26"), background),
-			"toolErrorBg":        colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.removedLineBackground"], errorColor+"26"), background),
+			"toolPendingBg":      strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["surface.background"], background), getColor("", "editorWidget.background", "input.background"), colorutil.Flatten(textMuted+"1f", background)),
+			"toolSuccessBg":      strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["success.background"], background), colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.insertedLineBackground"], success+"26"), background)),
+			"toolErrorBg":        strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["error.background"], background), colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.removedLineBackground"], errorColor+"26"), background)),
 			"toolTitle":          text,
 			"toolOutput":         textMuted,
 			"mdHeading":          strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.heading"), yellow, accent),

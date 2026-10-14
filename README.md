@@ -57,7 +57,7 @@ go run . list targets
 | Helix | Editor | Zed | `dist/helix/` | `bearded-theme-ports-helix.zip` | Yes |
 | Neovim | Editor | Zed | `dist/neovim/` | `bearded-theme-ports-neovim.zip` | Yes |
 | OpenCode | CLI theme | VS Code | `dist/opencode/` | `bearded-theme-ports-opencode.zip` | Yes |
-| Pi | CLI theme | VS Code | `dist/pi/` | `bearded-theme-ports-pi.zip` | Yes |
+| Pi | CLI theme | VS Code + Zed | `dist/pi/` | `bearded-theme-ports-pi.zip` | Yes |
 | WezTerm | Terminal | VS Code | `dist/wezterm/` | `bearded-theme-ports-wezterm.zip` | Yes |
 | iTerm2 | Terminal | VS Code | `dist/iterm2/` | `bearded-theme-ports-iterm2.zip` | No |
 | Kitty | Terminal | VS Code | `dist/kitty/` | `bearded-theme-ports-kitty.zip` | Yes (sh) |
@@ -543,6 +543,18 @@ Generates JSON theme files for [Pi](https://pi.dev/docs/latest/themes).
 Reference: <https://pi.dev/docs/latest/themes> and [theme schema](https://pi.dev/schemas/theme.schema.json).
 
 Each generated theme defines semantic UI tokens, syntax highlighting, markdown styles, diff colors, and thinking-level border states. The `appearance` property is explicitly set to `"dark"` or `"light"` so Pi can match your terminal appearance.
+
+VS Code supplies the base palette and syntax colors. Matching Zed themes supply `info` for `dim`, `text.accent` for `accent`, `text.muted` for `muted`, and these backgrounds:
+
+| Pi token | Zed style key |
+| --- | --- |
+| `toolSuccessBg` | `success.background` |
+| `toolErrorBg` | `error.background` |
+| `customMessageBg` | `info.background` |
+| `toolPendingBg` | `surface.background` |
+| `userMessageBg` | `hint.background` |
+
+Translucent colors are flattened against the editor background. Missing or transparent Zed values retain the VS Code-derived fallbacks.
 
 To use a theme in Pi:
 - Use `/settings` > **Theme** and select the theme name (e.g. `bearded-theme-monokai-stone`).

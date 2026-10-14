@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"testing"
 
+	"bearded-theme-ports/internal/colorutil"
 	"bearded-theme-ports/internal/model"
 )
 
@@ -39,7 +40,7 @@ func TestRender_DarkMode_IncludesSchemaAppearanceAndTokens(t *testing.T) {
 				{Scope: model.ScopeList{"storage.type"}, Settings: model.TokenColorSettings{Foreground: "#ab9df2"}},
 			},
 		},
-	}, "#9AA2A6", "#123456", "#654321")
+	}, map[string]string{"info": "#9AA2A6", "text.accent": "#123456", "text.muted": "#654321"})
 	if err != nil {
 		t.Fatalf("render() error = %v", err)
 	}
@@ -120,7 +121,7 @@ func TestRender_LightMode_SetsLightAppearance(t *testing.T) {
 				"focusBorder":           "#268bd2",
 			},
 		},
-	}, "#2aa198", "", "")
+	}, map[string]string{"info": "#2aa198"})
 	if err != nil {
 		t.Fatalf("render() error = %v", err)
 	}
@@ -138,6 +139,65 @@ func TestRender_LightMode_SetsLightAppearance(t *testing.T) {
 	}
 	if doc.Colors["dim"] != "#2aa198" {
 		t.Fatalf("dim = %q, want #2aa198", doc.Colors["dim"])
+	}
+}
+
+func TestRender_ZedBackgrounds(t *testing.T) {
+	mapping := map[string]string{
+		"customMessageBg": "info.background",
+		"toolErrorBg":     "error.background",
+		"toolPendingBg":   "surface.background",
+		"toolSuccessBg":   "success.background",
+		"userMessageBg":   "hint.background",
+	}
+	for _, light := range []bool{false, true} {
+		background := "#2A2D33"
+		if light {
+			background = "#fdf6e3"
+		}
+		for _, value := range []string{"#123456", "#a9dc7626", "", "transparent"} {
+			t.Run(background+"/"+value, func(t *testing.T) {
+				input := model.ThemeFile{
+					Slug:    "bearded-theme-monokai-stone",
+					IsLight: light,
+					Theme: model.VSCodeTheme{Colors: map[string]string{
+						"editor.background":                 background,
+						"sideBar.background":                "#111111",
+						"editorWidget.background":           "#222222",
+						"terminal.ansiMagenta":              "#e991e3",
+						"diffEditor.insertedLineBackground": "#33445580",
+						"diffEditor.removedLineBackground":  "#55443380",
+					}},
+				}
+				fallbacks := map[string]string{
+					"customMessageBg": colorutil.Flatten("#e991e326", background),
+					"toolErrorBg":     colorutil.Flatten("#55443380", background),
+					"toolPendingBg":   "#222222",
+					"toolSuccessBg":   colorutil.Flatten("#33445580", background),
+					"userMessageBg":   "#111111",
+				}
+				// Set one Zed key at a time to catch cross-wired mappings.
+				for target, source := range mapping {
+					content, err := render(input, map[string]string{source: value})
+					if err != nil {
+						t.Fatalf("render() error = %v", err)
+					}
+					var doc themeDocument
+					if err := json.Unmarshal(content, &doc); err != nil {
+						t.Fatalf("json.Unmarshal() error = %v", err)
+					}
+					for key, fallback := range fallbacks {
+						want := fallback
+						if flattened := colorutil.Flatten(value, background); key == target && flattened != "" {
+							want = flattened
+						}
+						if got := doc.Colors[key]; got != want {
+							t.Errorf("Zed %s=%q: %s = %q, want %q", source, value, key, got, want)
+						}
+					}
+				}
+			})
+		}
 	}
 }
 
@@ -170,9 +230,14 @@ func TestBuild_WritesFiles(t *testing.T) {
 			Theme: model.ZedTheme{
 				Style: model.ZedThemeStyle{
 					Values: map[string]string{
-						"info":        "#9AA2A6",
-						"text.accent": "#123456",
-						"text.muted":  "#654321",
+						"info":               "#9AA2A6",
+						"text.accent":        "#123456",
+						"text.muted":         "#654321",
+						"success.background": "#a9dc7626",
+						"error.background":   "#fc6a6726",
+						"info.background":    "#363941",
+						"surface.background": "#272a30",
+						"hint.background":    "#131417",
 					},
 				},
 			},
@@ -204,7 +269,26 @@ func TestBuild_WritesFiles(t *testing.T) {
 	}
 
 	stonePath := filepath.Join(root, "dist", "pi", "bearded-theme-monokai-stone.json")
-	if _, err := os.Stat(stonePath); err != nil {
-		t.Fatalf("expected stone theme at %s: %v", stonePath, err)
+	content, err := os.ReadFile(stonePath)
+	if err != nil {
+		t.Fatalf("read stone theme at %s: %v", stonePath, err)
+	}
+	var doc themeDocument
+	if err := json.Unmarshal(content, &doc); err != nil {
+		t.Fatalf("json.Unmarshal() error = %v", err)
+	}
+	for key, want := range map[string]string{
+		"dim":             "#9AA2A6",
+		"accent":          "#123456",
+		"muted":           "#654321",
+		"customMessageBg": "#363941",
+		"toolPendingBg":   "#272a30",
+		"userMessageBg":   "#131417",
+		"toolSuccessBg":   colorutil.Flatten("#a9dc7626", "#2A2D33"),
+		"toolErrorBg":     colorutil.Flatten("#fc6a6726", "#2A2D33"),
+	} {
+		if got := doc.Colors[key]; got != want {
+			t.Errorf("%s = %q, want %q from matching Zed theme", key, got, want)
+		}
 	}
 }
