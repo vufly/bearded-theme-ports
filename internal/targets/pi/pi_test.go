@@ -39,7 +39,7 @@ func TestRender_DarkMode_IncludesSchemaAppearanceAndTokens(t *testing.T) {
 				{Scope: model.ScopeList{"storage.type"}, Settings: model.TokenColorSettings{Foreground: "#ab9df2"}},
 			},
 		},
-	}, "#9AA2A6")
+	}, "#9AA2A6", "#123456", "#654321")
 	if err != nil {
 		t.Fatalf("render() error = %v", err)
 	}
@@ -60,6 +60,12 @@ func TestRender_DarkMode_IncludesSchemaAppearanceAndTokens(t *testing.T) {
 	}
 	if doc.Colors["dim"] != "#9AA2A6" {
 		t.Fatalf("dim = %q, want #9AA2A6", doc.Colors["dim"])
+	}
+	if doc.Colors["accent"] != "#123456" {
+		t.Fatalf("accent = %q, want Zed text.accent #123456", doc.Colors["accent"])
+	}
+	if doc.Colors["muted"] != "#654321" {
+		t.Fatalf("muted = %q, want Zed text.muted #654321", doc.Colors["muted"])
 	}
 
 	requiredColors := []string{
@@ -114,7 +120,7 @@ func TestRender_LightMode_SetsLightAppearance(t *testing.T) {
 				"focusBorder":           "#268bd2",
 			},
 		},
-	}, "#2aa198")
+	}, "#2aa198", "", "")
 	if err != nil {
 		t.Fatalf("render() error = %v", err)
 	}
@@ -164,7 +170,9 @@ func TestBuild_WritesFiles(t *testing.T) {
 			Theme: model.ZedTheme{
 				Style: model.ZedThemeStyle{
 					Values: map[string]string{
-						"info": "#9AA2A6",
+						"info":        "#9AA2A6",
+						"text.accent": "#123456",
+						"text.muted":  "#654321",
 					},
 				},
 			},

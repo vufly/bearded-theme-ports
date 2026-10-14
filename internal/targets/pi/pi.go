@@ -37,15 +37,23 @@ func Build(root string, themes []model.ThemeFile, zedThemes []model.ZedThemeFile
 	}
 
 	zedInfo := make(map[string]string, len(zedThemes))
+	zedAccent := make(map[string]string, len(zedThemes))
+	zedMuted := make(map[string]string, len(zedThemes))
 	for _, zt := range zedThemes {
 		if val := zt.Theme.Style.Values["info"]; val != "" {
 			zedInfo[zt.Slug] = val
+		}
+		if val := zt.Theme.Style.Values["text.accent"]; val != "" {
+			zedAccent[zt.Slug] = val
+		}
+		if val := zt.Theme.Style.Values["text.muted"]; val != "" {
+			zedMuted[zt.Slug] = val
 		}
 	}
 
 	paths := make([]string, 0, len(themes))
 	for _, theme := range themes {
-		content, err := render(theme, zedInfo[theme.Slug])
+		content, err := render(theme, zedInfo[theme.Slug], zedAccent[theme.Slug], zedMuted[theme.Slug])
 		if err != nil {
 			return nil, fmt.Errorf("render %s: %w", theme.Slug, err)
 		}
@@ -61,7 +69,7 @@ func Build(root string, themes []model.ThemeFile, zedThemes []model.ZedThemeFile
 	return paths, nil
 }
 
-func render(input model.ThemeFile, zedInfo string) ([]byte, error) {
+func render(input model.ThemeFile, zedInfo, zedAccent, zedMuted string) ([]byte, error) {
 	appearance := "dark"
 	defaultBg := "#000000"
 	defaultFg := "#ffffff"
@@ -96,6 +104,7 @@ func render(input model.ThemeFile, zedInfo string) ([]byte, error) {
 		getColor("", "descriptionForeground", "editorLineNumber.foreground", "disabledForeground"),
 		text,
 	)
+	muted := strutil.FirstNonEmpty(colorutil.Flatten(zedMuted, background), textMuted)
 	dim := strutil.FirstNonEmpty(
 		colorutil.Flatten(zedInfo, background),
 		getColor("", "editorWhitespace.foreground", "editorIndentGuide.background1", "disabledForeground"),
@@ -112,6 +121,7 @@ func render(input model.ThemeFile, zedInfo string) ([]byte, error) {
 	)
 
 	accent := strutil.FirstNonEmpty(
+		colorutil.Flatten(zedAccent, background),
 		getColor("", "editorCursor.foreground", "focusBorder", "activityBarBadge.background", "terminal.ansiCyan", "charts.blue"),
 		text,
 	)
@@ -185,62 +195,62 @@ func render(input model.ThemeFile, zedInfo string) ([]byte, error) {
 		Name:       input.Slug,
 		Appearance: appearance,
 		Colors: map[string]string{
-			"accent":              accent,
-			"border":              border,
-			"borderAccent":        borderAccent,
-			"borderMuted":         borderMuted,
-			"success":             success,
-			"error":               errorColor,
-			"warning":             warning,
-			"muted":               textMuted,
-			"dim":                 dim,
-			"text":                text,
-			"thinkingText":        strutil.FirstNonEmpty(getColor("", "editorLineNumber.foreground", "descriptionForeground"), textMuted),
-			"scrollbarTrack":      strutil.FirstNonEmpty(getColor("", "scrollbarSlider.background"), borderMuted),
-			"scrollbarThumb":      strutil.FirstNonEmpty(getColor("", "scrollbarSlider.hoverBackground", "scrollbarSlider.activeBackground"), textMuted),
-			"selectedBg":          selectedBg,
-			"searchMatchBg":       strutil.FirstNonEmpty(getColor("", "editor.findMatchHighlightBackground", "editor.findMatchBackground"), selectedBg),
-			"searchMatchText":     strutil.FirstNonEmpty(getColor("", "editor.findMatchForeground", "editor.findMatchHighlightForeground"), text),
-			"userMessageBg":       userMessageBg,
-			"userMessageText":     text,
-			"customMessageBg":     colorutil.Flatten(strutil.FirstNonEmpty(purple+"26", accent+"26"), background),
-			"customMessageText":   textMuted,
-			"customMessageLabel":  accent,
-			"toolPendingBg":       strutil.FirstNonEmpty(getColor("", "editorWidget.background", "input.background"), colorutil.Flatten(textMuted+"1f", background)),
-			"toolSuccessBg":       colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.insertedLineBackground"], success+"26"), background),
-			"toolErrorBg":         colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.removedLineBackground"], errorColor+"26"), background),
-			"toolTitle":           text,
-			"toolOutput":          textMuted,
-			"mdHeading":           strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.heading"), yellow, accent),
-			"mdLink":              strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.underline.link", "markup.link"), getColor("", "textLink.foreground", "editorLink.activeForeground", "terminal.ansiBlue"), blue),
-			"mdLinkUrl":           textMuted,
-			"mdCode":              strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.inline.raw", "markup.raw.inline"), syntaxType, accent),
-			"mdCodeBlock":         syntaxString,
-			"mdCodeBlockBorder":   borderMuted,
-			"mdQuote":             strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.quote"), textMuted),
-			"mdQuoteBorder":       borderMuted,
-			"mdHr":                borderMuted,
-			"mdListBullet":        strutil.FirstNonEmpty(syntaxKeyword, accent),
-			"toolDiffAdded":       strutil.FirstNonEmpty(getColor("", "gitDecoration.untrackedResourceForeground", "terminal.ansiGreen", "editorGutter.addedBackground"), success),
-			"toolDiffRemoved":     strutil.FirstNonEmpty(getColor("", "gitDecoration.deletedResourceForeground", "terminal.ansiRed", "editorGutter.deletedBackground"), errorColor),
-			"toolDiffContext":     textMuted,
-			"syntaxComment":       syntaxComment,
-			"syntaxKeyword":       syntaxKeyword,
-			"syntaxFunction":      syntaxFunction,
-			"syntaxVariable":      syntaxVariable,
-			"syntaxString":        syntaxString,
-			"syntaxNumber":        syntaxNumber,
-			"syntaxType":          syntaxType,
-			"syntaxOperator":      syntaxOperator,
-			"syntaxPunctuation":   syntaxPunctuation,
-			"thinkingOff":         borderMuted,
-			"thinkingMinimal":     colorutil.Flatten(blue+"40", borderMuted),
-			"thinkingLow":         blue,
-			"thinkingMedium":      purple,
-			"thinkingHigh":        strutil.FirstNonEmpty(getColor("", "terminal.ansiBrightMagenta"), syntaxType, purple),
-			"thinkingXhigh":       orange,
-			"thinkingMax":         red,
-			"bashMode":            strutil.FirstNonEmpty(getColor("", "terminal.ansiGreen"), green),
+			"accent":             accent,
+			"border":             border,
+			"borderAccent":       borderAccent,
+			"borderMuted":        borderMuted,
+			"success":            success,
+			"error":              errorColor,
+			"warning":            warning,
+			"muted":              muted,
+			"dim":                dim,
+			"text":               text,
+			"thinkingText":       strutil.FirstNonEmpty(getColor("", "editorLineNumber.foreground", "descriptionForeground"), textMuted),
+			"scrollbarTrack":     strutil.FirstNonEmpty(getColor("", "scrollbarSlider.background"), borderMuted),
+			"scrollbarThumb":     strutil.FirstNonEmpty(getColor("", "scrollbarSlider.hoverBackground", "scrollbarSlider.activeBackground"), textMuted),
+			"selectedBg":         selectedBg,
+			"searchMatchBg":      strutil.FirstNonEmpty(getColor("", "editor.findMatchHighlightBackground", "editor.findMatchBackground"), selectedBg),
+			"searchMatchText":    strutil.FirstNonEmpty(getColor("", "editor.findMatchForeground", "editor.findMatchHighlightForeground"), text),
+			"userMessageBg":      userMessageBg,
+			"userMessageText":    text,
+			"customMessageBg":    colorutil.Flatten(strutil.FirstNonEmpty(purple+"26", accent+"26"), background),
+			"customMessageText":  textMuted,
+			"customMessageLabel": accent,
+			"toolPendingBg":      strutil.FirstNonEmpty(getColor("", "editorWidget.background", "input.background"), colorutil.Flatten(textMuted+"1f", background)),
+			"toolSuccessBg":      colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.insertedLineBackground"], success+"26"), background),
+			"toolErrorBg":        colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.removedLineBackground"], errorColor+"26"), background),
+			"toolTitle":          text,
+			"toolOutput":         textMuted,
+			"mdHeading":          strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.heading"), yellow, accent),
+			"mdLink":             strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.underline.link", "markup.link"), getColor("", "textLink.foreground", "editorLink.activeForeground", "terminal.ansiBlue"), blue),
+			"mdLinkUrl":          textMuted,
+			"mdCode":             strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.inline.raw", "markup.raw.inline"), syntaxType, accent),
+			"mdCodeBlock":        syntaxString,
+			"mdCodeBlockBorder":  borderMuted,
+			"mdQuote":            strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "markup.quote"), textMuted),
+			"mdQuoteBorder":      borderMuted,
+			"mdHr":               borderMuted,
+			"mdListBullet":       strutil.FirstNonEmpty(syntaxKeyword, accent),
+			"toolDiffAdded":      strutil.FirstNonEmpty(getColor("", "gitDecoration.untrackedResourceForeground", "terminal.ansiGreen", "editorGutter.addedBackground"), success),
+			"toolDiffRemoved":    strutil.FirstNonEmpty(getColor("", "gitDecoration.deletedResourceForeground", "terminal.ansiRed", "editorGutter.deletedBackground"), errorColor),
+			"toolDiffContext":    textMuted,
+			"syntaxComment":      syntaxComment,
+			"syntaxKeyword":      syntaxKeyword,
+			"syntaxFunction":     syntaxFunction,
+			"syntaxVariable":     syntaxVariable,
+			"syntaxString":       syntaxString,
+			"syntaxNumber":       syntaxNumber,
+			"syntaxType":         syntaxType,
+			"syntaxOperator":     syntaxOperator,
+			"syntaxPunctuation":  syntaxPunctuation,
+			"thinkingOff":        borderMuted,
+			"thinkingMinimal":    colorutil.Flatten(blue+"40", borderMuted),
+			"thinkingLow":        blue,
+			"thinkingMedium":     purple,
+			"thinkingHigh":       strutil.FirstNonEmpty(getColor("", "terminal.ansiBrightMagenta"), syntaxType, purple),
+			"thinkingXhigh":      orange,
+			"thinkingMax":        red,
+			"bashMode":           strutil.FirstNonEmpty(getColor("", "terminal.ansiGreen"), green),
 		},
 		Export: &exportColors{
 			PageBg: background,
