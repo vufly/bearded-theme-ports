@@ -174,7 +174,8 @@ func render(input model.ThemeFile, zedStyle map[string]string) ([]byte, error) {
 	syntaxOperator := strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "keyword.operator", "operator"), getColor(text, "terminal.ansiBlue"), blue)
 	syntaxPunctuation := strutil.FirstNonEmpty(palette.TokenForeground(input.Theme, background, "punctuation"), text)
 
-	userMessageBg := strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["hint.background"], background), getColor("", "sideBar.background", "panel.background", "editorWidget.background"), background)
+	userMessageBg := strutil.FirstNonEmpty(getColor("", "banner.background"), getColor("", "sideBar.background", "panel.background", "editorWidget.background"), background)
+	userMessageText := strutil.FirstNonEmpty(colorutil.Flatten(colors["banner.foreground"], userMessageBg), text)
 	selectedBg := strutil.FirstNonEmpty(getColor("", "list.activeSelectionBackground", "editor.selectionBackground", "selection.background"), colorutil.Flatten(accent+"33", background))
 
 	cardBg := strutil.FirstNonEmpty(getColor("", "sideBar.background", "editorWidget.background"), background)
@@ -195,19 +196,19 @@ func render(input model.ThemeFile, zedStyle map[string]string) ([]byte, error) {
 			"muted":              muted,
 			"dim":                dim,
 			"text":               text,
-			"thinkingText":       strutil.FirstNonEmpty(getColor("", "editorLineNumber.foreground", "descriptionForeground"), textMuted),
+			"thinkingText":       strutil.FirstNonEmpty(getColor("", "descriptionForeground"), text),
 			"scrollbarTrack":     strutil.FirstNonEmpty(getColor("", "scrollbarSlider.background"), borderMuted),
 			"scrollbarThumb":     strutil.FirstNonEmpty(getColor("", "scrollbarSlider.hoverBackground", "scrollbarSlider.activeBackground"), textMuted),
 			"selectedBg":         selectedBg,
 			"searchMatchBg":      strutil.FirstNonEmpty(getColor("", "editor.findMatchHighlightBackground", "editor.findMatchBackground"), selectedBg),
 			"searchMatchText":    strutil.FirstNonEmpty(getColor("", "editor.findMatchForeground", "editor.findMatchHighlightForeground"), text),
 			"userMessageBg":      userMessageBg,
-			"userMessageText":    text,
+			"userMessageText":    userMessageText,
 			"customMessageBg":    strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["info.background"], background), colorutil.Flatten(purple+"26", background)),
 			"customMessageText":  textMuted,
 			"customMessageLabel": accent,
 			"toolPendingBg":      strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["surface.background"], background), getColor("", "editorWidget.background", "input.background"), colorutil.Flatten(textMuted+"1f", background)),
-			"toolSuccessBg":      strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["success.background"], background), colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.insertedLineBackground"], success+"26"), background)),
+			"toolSuccessBg":      strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["panel.background"], background), colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.insertedLineBackground"], success+"26"), background)),
 			"toolErrorBg":        strutil.FirstNonEmpty(colorutil.Flatten(zedStyle["error.background"], background), colorutil.Flatten(strutil.FirstNonEmpty(colors["diffEditor.removedLineBackground"], errorColor+"26"), background)),
 			"toolTitle":          text,
 			"toolOutput":         textMuted,

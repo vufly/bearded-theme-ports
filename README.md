@@ -553,9 +553,10 @@ VS Code supplies the base palette and syntax colors. Matching Zed themes supply 
 | `toolErrorBg` | `error.background` |
 | `customMessageBg` | `info.background` |
 | `toolPendingBg` | `surface.background` |
-| `userMessageBg` | `hint.background` |
 
-Translucent colors are flattened against the editor background. Missing or transparent Zed values retain the VS Code-derived fallbacks.
+User messages use VS Code `banner.background` for `userMessageBg` and `banner.foreground` for `userMessageText`. Missing or transparent banner colors fall back to the existing VS Code UI background selection and editor text color.
+
+Translucent backgrounds are flattened against the editor background; banner foreground is flattened against the resolved user-message background. Missing or transparent Zed values retain the VS Code-derived fallbacks.
 
 To use a theme in Pi:
 - Use `/settings` > **Theme** and select the theme name (e.g. `bearded-theme-monokai-stone`).

@@ -147,8 +147,7 @@ func TestRender_ZedBackgrounds(t *testing.T) {
 		"customMessageBg": "info.background",
 		"toolErrorBg":     "error.background",
 		"toolPendingBg":   "surface.background",
-		"toolSuccessBg":   "success.background",
-		"userMessageBg":   "hint.background",
+		"toolSuccessBg":   "panel.background",
 	}
 	for _, light := range []bool{false, true} {
 		background := "#2A2D33"
@@ -201,6 +200,51 @@ func TestRender_ZedBackgrounds(t *testing.T) {
 	}
 }
 
+func TestRender_UserMessageBannerColors(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		background string
+		foreground string
+		wantBg     string
+		wantText   string
+	}{
+		{"opaque", "#ffd866", "#25282d", "#ffd866", "#25282d"},
+		{"alpha", "#ffd86680", "#25282d80", colorutil.Flatten("#ffd86680", "#2A2D33"), colorutil.Flatten("#25282d80", colorutil.Flatten("#ffd86680", "#2A2D33"))},
+		{"missing", "", "", "#111111", "#c3c6cc"},
+		{"transparent", "transparent", "transparent", "#111111", "#c3c6cc"},
+		{"missing foreground", "#ffd866", "", "#ffd866", "#c3c6cc"},
+		{"missing background", "", "#25282d80", "#111111", colorutil.Flatten("#25282d80", "#111111")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			content, err := render(model.ThemeFile{
+				Slug: "bearded-theme-monokai-stone",
+				Theme: model.VSCodeTheme{Colors: map[string]string{
+					"editor.background":  "#2A2D33",
+					"editor.foreground":  "#c3c6cc",
+					"sideBar.background": "#111111",
+					"banner.background":  tc.background,
+					"banner.foreground":  tc.foreground,
+				}},
+			}, map[string]string{"panel.background": "#222222", "hint.background": "#333333"})
+			if err != nil {
+				t.Fatalf("render() error = %v", err)
+			}
+			var doc themeDocument
+			if err := json.Unmarshal(content, &doc); err != nil {
+				t.Fatalf("json.Unmarshal() error = %v", err)
+			}
+			for key, want := range map[string]string{"userMessageBg": tc.wantBg, "userMessageText": tc.wantText} {
+				if got := doc.Colors[key]; got != want {
+					t.Errorf("%s = %q, want %q", key, got, want)
+				}
+			}
+			if _, ok := doc.Colors["userMessageFb"]; ok {
+				t.Error("unexpected userMessageFb token; Pi uses userMessageText")
+			}
+		})
+	}
+}
+
 func TestBuild_WritesFiles(t *testing.T) {
 	root := t.TempDir()
 	themes := []model.ThemeFile{
@@ -210,6 +254,8 @@ func TestBuild_WritesFiles(t *testing.T) {
 				Colors: map[string]string{
 					"editor.background": "#2A2D33",
 					"editor.foreground": "#c3c6cc",
+					"banner.background": "#ffd866",
+					"banner.foreground": "#25282d",
 				},
 			},
 		},
@@ -238,6 +284,7 @@ func TestBuild_WritesFiles(t *testing.T) {
 						"info.background":    "#363941",
 						"surface.background": "#272a30",
 						"hint.background":    "#131417",
+						"panel.background":   "#25282d",
 					},
 				},
 			},
@@ -283,12 +330,13 @@ func TestBuild_WritesFiles(t *testing.T) {
 		"muted":           "#654321",
 		"customMessageBg": "#363941",
 		"toolPendingBg":   "#272a30",
-		"userMessageBg":   "#131417",
-		"toolSuccessBg":   colorutil.Flatten("#a9dc7626", "#2A2D33"),
+		"userMessageBg":   "#ffd866",
+		"userMessageText": "#25282d",
+		"toolSuccessBg":   "#25282d",
 		"toolErrorBg":     colorutil.Flatten("#fc6a6726", "#2A2D33"),
 	} {
 		if got := doc.Colors[key]; got != want {
-			t.Errorf("%s = %q, want %q from matching Zed theme", key, got, want)
+			t.Errorf("%s = %q, want %q from theme sources", key, got, want)
 		}
 	}
 }
